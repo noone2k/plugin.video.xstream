@@ -4,6 +4,7 @@ Nightly Updates
 - Fix hdfilme_tv (Danke an vka)
 - Watchbox hinzugefügt
 - Meinkino.to entfernt
+- Update Flimmerstube
 
 xStream 3.4.2
 
