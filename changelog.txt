@@ -3,6 +3,7 @@ Nightly Updates
 - Anmeldedaten für Serienstream.to eingefügt (Danke an WizzardMaker)
 - Fix hdfilme_tv (Danke an vka)
 - Watchbox hinzugefügt
+- Meinkino.to entfernt
 
 xStream 3.4.2
 
