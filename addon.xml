@@ -15,10 +15,10 @@
  </extension>
  <extension point="xbmc.addon.metadata">
    <summary lang="de">Watch xStream!</summary>
-   <description lang="de">Mit diesem Addon kannst du auf alle angebotenen Streams verschiedenster deutschen Quellen zugreifen.[CR]Website: https://xstream-kodi.github.io[CR]Support: http://xstream-addon.square7.ch</description>
+   <description lang="de">Mit diesem Addon kannst du auf alle angebotenen Streams verschiedenster deutschen Quellen zugreifen</description>
    <disclaimer lang="de">Die von diesem Addon dargestellten Inhalte werden von den Erstellern des Addons weder gehostet oder verbreitet, noch stehen die Ersteller in irgendeiner Beziehung zu den Content-Anbietern.</disclaimer>
    <summary lang="en">Watch xStream!</summary>
-   <description lang="en">With this addon you can watch all the streams from various german sources.[CR]Website: https://xstream-kodi.github.io[CR]Support: http://xstream-addon.square7.ch</description>
+   <description lang="en">With this addon you can watch all the streams from various german sources</description>
    <disclaimer lang="en">The creators of this addon do not host or distribute any of the content displayed by the addon nor do they have any affiliation with the content providers.</disclaimer>
    <forum>http://lastship.square7.ch/forum/forumdisplay.php?fid=15</forum>
    <source>https://github.com/lastship/plugin.video.xstream</source>
