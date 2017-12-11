@@ -1,4 +1,4 @@
-Nightly Updates
+xStream 3.4.3
 
 - Anmeldedaten für Serienstream.to eingefügt (Danke an WizzardMaker)
 - Fix hdfilme_tv (Danke an vka)
