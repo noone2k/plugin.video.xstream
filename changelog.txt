@@ -1,5 +1,7 @@
 Nightly Updates
 
+- Fix DDL.me Genres
+
 xStream 3.4.3
 
 - Anmeldedaten für Serienstream.to eingefügt (Danke an WizzardMaker)
