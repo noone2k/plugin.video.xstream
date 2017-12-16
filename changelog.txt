@@ -1,6 +1,7 @@
 Nightly Updates
 
 - Fix DDL.me Genres
+- Watchbox Code Optimiert und Regex fix
 
 xStream 3.4.3
 
