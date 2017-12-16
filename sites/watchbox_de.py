@@ -24,24 +24,21 @@ def load():
     params = ParameterHandler()
     params.setParam('sUrl', URL_NEUE_FILME)
     oGui.addFolder(cGuiElement('Filme', SITE_IDENTIFIER, 'showEntries'), params)
-    params.setParam('sUrl', URL_GENRES)
     params.setParam('valueType', 'filme')
     oGui.addFolder(cGuiElement('Film Genre', SITE_IDENTIFIER, 'showGenresList'), params)
     params.setParam('sUrl', URL_SERIES)
     oGui.addFolder(cGuiElement('Serien', SITE_IDENTIFIER, 'showEntries'), params)
-    params.setParam('sUrl', URL_GENRES)
     params.setParam('valueType', 'serien')
     oGui.addFolder(cGuiElement('Serien Genre', SITE_IDENTIFIER, 'showGenresList'), params)
     oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'))
     oGui.setEndOfDirectory()
 
 
-def showGenresList(entryUrl=False):
+def showGenresList():
     oGui = cGui()
     params = ParameterHandler()
-    if not entryUrl: entryUrl = params.getValue('sUrl')
     valueType = params.getValue('valueType')
-    sHtmlContent = cRequestHandler(entryUrl).request()
+    sHtmlContent = cRequestHandler(URL_GENRES).request()
     sPattern = '<a[^>]class="genre-teaser"[^>]href="([^"]+).*?title">([^<]+)'
     isMatch, aResult = cParser.parse(sHtmlContent, sPattern)
 
@@ -59,7 +56,7 @@ def showEntries(entryUrl=False, sGui=False):
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
     sHtmlContent = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False)).request()
-    sPattern = 'title="([^"]+).*?href="([^"]+)">.*?src="([^"]+).*?<div[^>]class="text_teaser-portrait-meta">([^<]+).*?description">([^<]+)'
+    sPattern = 'data-asset-title="([^"]+).*?href="([^"]+)">.*?src="([^"]+).*?<div[^>]class="text_teaser-portrait-meta">([^<]+).*?description">([^<]+)'
     isMatch, aResult = cParser.parse(sHtmlContent, sPattern)
 
     if not isMatch:
@@ -67,16 +64,16 @@ def showEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sName, sUrl, sThumbnail, sYahr, sDesc in aResult:
+    for sName, sUrl, sThumbnail, sYear, sDesc in aResult:
         try:
             isTvshow = True if "serien" in sUrl else False
             if sThumbnail and sThumbnail.startswith('/'):
                 sThumbnail = 'http:' + sThumbnail
-                Yahr = re.compile('(\d{4})', flags=re.I | re.M).findall(sYahr)[0]
+                Year = re.compile('(\d{4})', flags=re.I | re.M).findall(sYear)[0]
             oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons' if isTvshow else 'getHosterUrl')
-            oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')     
+            oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
             oGuiElement.setThumbnail(sThumbnail)
-            oGuiElement.setYear(Yahr)
+            oGuiElement.setYear(Year)
             oGuiElement.setDescription(sDesc)
             params.setParam('sThumbnail', sThumbnail)
             params.setParam('entryUrl', URL_MAIN + sUrl)
