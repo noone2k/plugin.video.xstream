@@ -2,6 +2,7 @@ Nightly Updates
 
 - Fix DDL.me Genres
 - Watchbox Code Optimiert und Regex fix
+- Fix Streamdream Hoster Problem
 
 xStream 3.4.3
 
