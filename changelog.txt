@@ -1,8 +1,13 @@
 Nightly Updates
 
+- URLResolver AutoUpdate - Standard deaktiviert
+- Update settings.xml
 - Fix DDL.me Genres
 - Watchbox Code Optimiert und Regex fix
 - Fix Streamdream Hoster Problem
+- OnlineFilme hinzugefügt
+- Folgende Seiten entfernt:
+     1kino, Goldstream, Meinkino, Moviesever, RapidStream, streamkisteTV, SzeneStreams, tata
 
 xStream 3.4.3
 
