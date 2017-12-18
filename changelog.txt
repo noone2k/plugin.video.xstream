@@ -5,7 +5,7 @@ Nightly Updates
 - Fix DDL.me Genres
 - Watchbox Code Optimiert und Regex fix
 - Fix Streamdream Hoster Problem
-- OnlineFilme hinzugefügt
+- Add OnlineFilme
 - Folgende Seiten entfernt:
      1kino, Goldstream, Meinkino, Moviesever, RapidStream, streamkisteTV, SzeneStreams, tata
 
