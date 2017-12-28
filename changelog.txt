@@ -1,4 +1,6 @@
 Nightly Updates
+- video2k entfernt
+- Add Movie2k AG
 
 xStream 3.4.4
 
@@ -8,10 +10,9 @@ xStream 3.4.4
 - Watchbox Code Optimiert und Regex fix
 - Fix Streamdream Hoster Problem
 - Add OnlineFilme
-- Add Movie2k AG
 - Folgende Seiten entfernt:
      1kino, Goldstream, Meinkino, Moviesever, RapidStream, streamkisteTV, SzeneStreams, 
-     video2k, tata (aktuell keine Filme und Serien mehr)
+     tata (aktuell keine Filme und Serien mehr)
 
 xStream 3.4.3
 
