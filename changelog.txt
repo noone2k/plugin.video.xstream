@@ -1,6 +1,8 @@
 Nightly Updates
 - video2k entfernt
 - Add Movie2k AG
+- Fix CFScrape für HD-Streams
+- Add HD-Streams
 
 xStream 3.4.4
 
