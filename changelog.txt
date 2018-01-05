@@ -1,4 +1,5 @@
 Nightly Updates
+- Cinenator Fix Bug's und Code optimiert
 - video2k entfernt
 - Add Movie2k AG
 - Fix CFScrape für HD-Streams
