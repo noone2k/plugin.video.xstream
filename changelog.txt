@@ -3,6 +3,7 @@ Nightly Updates
 - Add Movie2k AG
 - Fix CFScrape für HD-Streams
 - Add HD-Streams
+- Onlinefilme Code optimiert
 
 xStream 3.4.4
 
