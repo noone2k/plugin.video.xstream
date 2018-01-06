@@ -5,6 +5,7 @@ Nightly Updates
 - Fix CFScrape für HD-Streams
 - Add HD-Streams
 - Onlinefilme Code optimiert
+- Video4k entfernt (umleitung auf cine.to)
 
 xStream 3.4.4
 
