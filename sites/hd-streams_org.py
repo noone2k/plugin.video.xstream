@@ -17,7 +17,6 @@ URL_FILME = URL_MAIN + 'movies?perPage=54'
 URL_SERIE = URL_MAIN + 'seasons?perPage=54'
 URL_SEARCH = URL_MAIN + 'search?q=%s&movies=true&seasons=true&actors=false&didyoumean=false'
 
-
 def load():
     logger.info("Load %s" % SITE_NAME)
     oGui = cGui()
@@ -30,7 +29,6 @@ def load():
     oGui.addFolder(cGuiElement('Serien Genre', SITE_IDENTIFIER, 'showGenre'), params)
     oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'))
     oGui.setEndOfDirectory()
-
 
 def showGenre():
     oGui = cGui()
@@ -54,7 +52,7 @@ def showEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     sHtmlContent = oRequest.request()
-    pattern = 'data-id="([^"]+)">[^>]*<a href="([^"]+).*?'
+    pattern = '">[^>]*<a href="([^"]+)".*?'
     pattern += "(?:url[^>]'([^']+)?).*?"
     pattern += 'filename">([^<]+)'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
@@ -63,7 +61,7 @@ def showEntries(entryUrl=False, sGui=False):
         return
     cf = createUrl(entryUrl, oRequest)
     total = len(aResult)
-    for sID, sUrl, sThumbnail, sName in aResult:
+    for sUrl, sThumbnail, sName in aResult:
         sYear = re.compile("(.*?)\((\d*)\)").findall(sName)
         for name, year in sYear:
             sName = name
@@ -146,9 +144,13 @@ def showHosters():
 
 def getHosterUrl(sUrl=False):
     results = []
-    result = {'streamUrl': sUrl, 'resolved': False}
-    results.append(result)
-    return results
+    if 'nxload' in sUrl:
+        sHtmlContent = cRequestHandler(sUrl).request()
+        sPattern = 'sources.*?"([^"]+)'
+        isMatch, sUrl = cParser.parse(sHtmlContent, sPattern)
+        return [{'streamUrl': sUrl[0], 'resolved': True}]
+    else:
+        return [{'streamUrl': sUrl, 'resolved': False}]
 
 
 def showSearch():
@@ -184,7 +186,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
             sYear = year
             break
         isTvshow = True if "series" in sUrl else False
-        oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
+        oGuiElement = cGuiElement(cUtil.cleanse_text(sName), SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
         oGuiElement.setThumbnail(sThumbnail.replace('\/', '/') + cf)
         if sYear:
             oGuiElement.setYear(sYear)
@@ -239,23 +241,23 @@ def evp_decode(cipher_text, passphrase, salt=None):
     return plain_text
 
 
-def evpKDF(passwd, salt, key_size=8, iv_size=4, iterations=1, hash_algorithm="md5"):
+def evpKDF(passwd, salt, key_size=8, iv_size=4):
     target_key_size = key_size + iv_size
     derived_bytes = ""
     number_of_derived_words = 0
     block = None
-    hasher = hashlib.new(hash_algorithm)
+    hasher = hashlib.new("md5")
     while number_of_derived_words < target_key_size:
         if block is not None:
             hasher.update(block)
         hasher.update(passwd)
         hasher.update(salt)
         block = hasher.digest()
-        hasher = hashlib.new(hash_algorithm)
-        for _i in range(1, iterations):
+        hasher = hashlib.new("md5")
+        for _i in range(1, 1):
             hasher.update(block)
             block = hasher.digest()
-            hasher = hashlib.new(hash_algorithm)
+            hasher = hashlib.new("md5")
         derived_bytes += block[0: min(len(block), (target_key_size - number_of_derived_words) * 4)]
         number_of_derived_words += len(block) / 4
     return {
