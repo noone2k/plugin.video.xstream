@@ -6,6 +6,7 @@ Nightly Updates
 - Add HD-Streams
 - Onlinefilme Code optimiert
 - Video4k entfernt (umleitung auf cine.to)
+- HD-Streams add Nxload direct
 
 xStream 3.4.4
 
