@@ -1,4 +1,5 @@
 Nightly Updates
+- Update jsunpacker.py
 - Fix Foxx
 - Cinenator Fix Bug's und Code optimiert
 - video2k entfernt
