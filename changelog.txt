@@ -1,4 +1,7 @@
 Nightly Updates
+
+xStream 3.4.5
+
 - Update jsunpacker.py
 - Fix Foxx
 - Cinenator Fix Bug's und Code optimiert
