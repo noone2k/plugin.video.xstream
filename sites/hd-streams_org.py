@@ -52,7 +52,7 @@ def showEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     sHtmlContent = oRequest.request()
-    pattern = '">[^>]*<a href="([^"]+)".*?'
+    pattern = 'data-id=.*?">[^>]*<a[^>]href="([^"]+)".*?'
     pattern += "(?:url[^>]'([^']+)?).*?"
     pattern += 'filename">([^<]+)'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
