@@ -1,4 +1,5 @@
 Nightly Updates
+- Update HDStreams (Fix Regex)
 
 xStream 3.4.5
 
