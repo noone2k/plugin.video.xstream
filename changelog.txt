@@ -1,4 +1,5 @@
 Nightly Updates
+- HD-Streams Fix search und Code Cleanup
 - Update HDStreams (Fix Regex)
 - Streamit Suche hinzugefügt und Code optimiert
 
