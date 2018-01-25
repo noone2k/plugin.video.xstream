@@ -1,5 +1,6 @@
 Nightly Updates
 - Update HDStreams (Fix Regex)
+- Streamit Suche hinzugefügt und Code optimiert
 
 xStream 3.4.5
 
