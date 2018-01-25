@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from resources.lib import logger, pyaes
+from resources.lib import logger
 from resources.lib.gui.gui import cGui
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
 from resources.lib.util import cUtil
-import base64, hashlib, re, urlparse
+import base64, re, urlparse
 
 SITE_IDENTIFIER = 'hd-streams_org'
 SITE_NAME = 'HD-Streams'
@@ -16,6 +16,7 @@ URL_MAIN = 'https://hd-streams.org/'
 URL_FILME = URL_MAIN + 'movies?perPage=54'
 URL_SERIE = URL_MAIN + 'seasons?perPage=54'
 URL_SEARCH = URL_MAIN + 'search?q=%s&movies=true&seasons=true&actors=false&didyoumean=false'
+
 
 def load():
     logger.info("Load %s" % SITE_NAME)
@@ -29,6 +30,7 @@ def load():
     oGui.addFolder(cGuiElement('Serien Genre', SITE_IDENTIFIER, 'showGenre'), params)
     oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'))
     oGui.setEndOfDirectory()
+
 
 def showGenre():
     oGui = cGui()
@@ -143,7 +145,6 @@ def showHosters():
 
 
 def getHosterUrl(sUrl=False):
-    results = []
     if 'nxload' in sUrl:
         sHtmlContent = cRequestHandler(sUrl).request()
         sPattern = 'sources.*?"([^"]+)'
@@ -171,6 +172,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
+    oRequest.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
     sHtmlContent = oRequest.request()
     pattern = '"title":"([^"]+).*?"url":"([^"]+).*?src":"([^"]+)'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
@@ -186,7 +188,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
             sYear = year
             break
         isTvshow = True if "series" in sUrl else False
-        oGuiElement = cGuiElement(cUtil.cleanse_text(sName), SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
+        oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
         oGuiElement.setThumbnail(sThumbnail.replace('\/', '/') + cf)
         if sYear:
             oGuiElement.setYear(sYear)
@@ -211,7 +213,7 @@ def getLinks(sUrl, e, h, token, sLang=False):
     for ct, iv, s, e in aResult:
         ct = re.sub(r"\\", "", ct[::-1])
         s = re.sub(r"\\", "", s)
-        sUrl2 = evp_decode(ct, base64.b64encode(token), s.decode('hex'))
+        sUrl2 = cUtil.evp_decode(base64.b64decode(ct), base64.b64encode(token), s.decode('hex'))
         return sUrl2.replace('\/', '/').replace('"', '')
 
 
@@ -227,40 +229,3 @@ def createUrl(sUrl, oRequest):
         delimiter = '&' if '|' in sUrl else '|'
         sUrl += delimiter + "User-Agent=" + oRequest.getHeaderEntry('User-Agent')
     return sUrl
-
-
-def evp_decode(cipher_text, passphrase, salt=None):
-    cipher_text = base64.b64decode(cipher_text)
-    if not salt:
-        salt = cipher_text[8:16]
-        cipher_text = cipher_text[16:]
-    data = evpKDF(passphrase, salt)
-    decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(data['key'], data['iv']))
-    plain_text = decrypter.feed(cipher_text)
-    plain_text += decrypter.feed()
-    return plain_text
-
-
-def evpKDF(passwd, salt, key_size=8, iv_size=4):
-    target_key_size = key_size + iv_size
-    derived_bytes = ""
-    number_of_derived_words = 0
-    block = None
-    hasher = hashlib.new("md5")
-    while number_of_derived_words < target_key_size:
-        if block is not None:
-            hasher.update(block)
-        hasher.update(passwd)
-        hasher.update(salt)
-        block = hasher.digest()
-        hasher = hashlib.new("md5")
-        for _i in range(1, 1):
-            hasher.update(block)
-            block = hasher.digest()
-            hasher = hashlib.new("md5")
-        derived_bytes += block[0: min(len(block), (target_key_size - number_of_derived_words) * 4)]
-        number_of_derived_words += len(block) / 4
-    return {
-        "key": derived_bytes[0: key_size * 4],
-        "iv": derived_bytes[key_size * 4:]
-    }
