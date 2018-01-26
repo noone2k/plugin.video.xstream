@@ -171,8 +171,12 @@ def showSearchEntries(entryUrl=False, sGui=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
+    sHtmlContent = cRequestHandler(URL_MAIN).request()
+    pattern = '<meta name="csrf-token" content="([^"]+)">'
+    token = re.compile(pattern, flags=re.I | re.M).findall(sHtmlContent)[0]
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     oRequest.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
+    oRequest.addHeaderEntry('X-CSRF-TOKEN', token)
     sHtmlContent = oRequest.request()
     pattern = '"title":"([^"]+).*?"url":"([^"]+).*?src":"([^"]+)'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
