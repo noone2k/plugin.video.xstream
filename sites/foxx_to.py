@@ -15,7 +15,7 @@ SITE_ICON = 'foxx.png'
 URL_MAIN = 'http://foxx.to/'
 URL_FILME = URL_MAIN + 'film'
 URL_SERIE = URL_MAIN + 'serie'
-URL_SEARCH = URL_MAIN + 'wp-json/dooplay/search/?keyword=%s&nonce='
+URL_SEARCH = URL_MAIN + '?s=%s'
 
 QUALITY_ENUM = {'240p': 0, '360p': 1, '480p': 2, '720p': 3, '1080p': 4, '240': 0, '360': 1, '480': 2, '720': 3,
                 '1080': 4}
@@ -232,7 +232,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
     sHtmlContent = cRequestHandler(entryUrl).request()
-    pattern = '"title":"([^"]+)","url":"([^"]+)","img":"([^"]+).*?date":"([^"]+)'
+    pattern = '2"><a[^>]href="([^"]+)"><img[^>]src="([^"]+)" alt="([^"]+).*?<span[^>]class="year">([\d]+)<.*?(?:<div[^>]class="contenido"><p>([^<]+)?)'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -240,18 +240,16 @@ def showSearchEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sName, sUrl, sThumbnail, sYear in aResult:
-        sThumbnail = sThumbnail.replace('\\/', '/').replace('\/', '/')
-        sUrl = sUrl.replace('\\/', '/').replace('\/', '/')
+    for sUrl,  sThumbnail, sName, sYear, sDesc in aResult:
         sThumbnail = re.sub('-\d+x\d+\.', '.', sThumbnail)
         if sThumbnail and not sThumbnail.startswith('http'):
             sThumbnail = URL_MAIN + sThumbnail
         isTvshow = True if "serie" in sUrl else False
-        sName = cUtil.cleanse_text(sName)
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons' if isTvshow else 'showHosters')
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setYear(sYear)
+        oGuiElement.setDescription(sDesc)
         sUrl = cUtil.quotePlus(sUrl)
         params.setParam('entryUrl', sUrl)
         params.setParam('sName', sName)
@@ -263,7 +261,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
         isMatchNextPage, sNextUrl = cParser.parseSingleResult(sHtmlContent, pattern)
         if isMatchNextPage:
             params.setParam('sUrl', sNextUrl)
-            oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
+            oGui.addNextPage(SITE_IDENTIFIER, 'showSearchEntries', params)
         oGui.setView('tvshows' if 'serie' in sUrl else 'movies')
         oGui.setEndOfDirectory()
 
@@ -278,9 +276,4 @@ def showSearch():
 
 def _search(oGui, sSearchText):
     if not sSearchText: return
-    try:
-        sHtmlContent = cRequestHandler(URL_MAIN).request()
-        nonce = re.findall('nonce":"([^"]+)', sHtmlContent)[0]
-    except:
-        nonce = '5d12d0fa54'
-    showSearchEntries(URL_SEARCH % sSearchText.strip() + nonce, oGui)
+    showSearchEntries(URL_SEARCH % sSearchText.strip(), oGui)
