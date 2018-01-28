@@ -1,5 +1,6 @@
 Nightly Updates
 - Foxx Fix search
+- Update util.py
 - HD-Streams Fix search und Code Cleanup
 - Update HDStreams (Fix Regex)
 - Streamit Suche hinzugefügt und Code optimiert
