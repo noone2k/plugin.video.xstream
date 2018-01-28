@@ -1,4 +1,5 @@
 Nightly Updates
+- Add SzeneStreams
 - Foxx Fix search
 - Update util.py
 - HD-Streams Fix search und Code Cleanup
