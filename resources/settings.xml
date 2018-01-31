@@ -117,6 +117,8 @@
     <setting label="SerienStream" type="lsep" />
     <setting default="true" id="plugin_serienstream_to" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_serienstream_to" label="30052" type="bool" />
+    <setting default="" id="serienstream.user" label="E-Mail" type="text" />
+    <setting default="" id="serienstream.pass" label="Passwort" option="hidden" type="text" />
     <setting type="sep" />
     <setting label="SeriesEver" type="lsep" />
     <setting default="true" id="plugin_seriesever_net" label="30050" type="bool" />
