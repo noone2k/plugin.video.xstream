@@ -1,4 +1,5 @@
 Nightly Updates
+- Anmeldedaten für Serienstream.to eingefügt
 - Add SzeneStreams
 - Foxx Fix search
 - Update util.py
