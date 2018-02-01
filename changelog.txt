@@ -1,4 +1,5 @@
 Nightly Updates
+- Kinostreamz und FilmeStreamz entfernt (Seiten offline)
 - Anmeldedaten für Serienstream.to eingefügt
 - Add SzeneStreams
 - Foxx Fix search
