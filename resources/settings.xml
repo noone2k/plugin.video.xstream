@@ -52,10 +52,6 @@
     <setting default="true" id="plugin_dokustream_org" label="30050" type="bool" />
     <setting default="false" enable="!eq(-1,false)" id="global_search_dokustream_org" label="30052" type="bool" />
     <setting type="sep" />
-    <setting label="FilmeStreamz" type="lsep" />
-    <setting default="true" id="plugin_filme-streamz_com" label="30050" type="bool" />
-    <setting default="true" enable="!eq(-1,false)" id="global_search_filme-streamz_com" label="30052" type="bool" />
-    <setting type="sep" />
     <setting label="FilmPalast" type="lsep" />
     <setting default="true" id="plugin_filmpalast_to" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_filmpalast_to" label="30052" type="bool" />
@@ -79,10 +75,6 @@
     <setting label="Kindertube" type="lsep" />
     <setting default="true" id="plugin_kindertube" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_kindertube" label="30052" type="bool" />
-    <setting type="sep" />
-    <setting label="KinoStreamz" type="lsep" />
-    <setting default="true" id="plugin_kino-streamz_com" label="30050" type="bool" />
-    <setting default="true" enable="!eq(-1,false)" id="global_search_kino-streamz_com" label="30052" type="bool" />
     <setting type="sep" />
     <setting label="KinoDogs" type="lsep" />
     <setting default="true" id="plugin_kinodogs_to" label="30050" type="bool" />
