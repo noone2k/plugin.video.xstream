@@ -1,3 +1,7 @@
+ Nightly Updates
+ 
+- [moviex.co] Seite hinzugefügt
+
 xStream 3.4.6
 
 - Kinostreamz und FilmeStreamz entfernt (Seiten offline)
