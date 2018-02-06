@@ -1,5 +1,5 @@
  Nightly Updates
- 
+- [Cinematrix.to] Seite hinzugefügt 
 - [moviex.co] Seite hinzugefügt
 
 xStream 3.4.6
