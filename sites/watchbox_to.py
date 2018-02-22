@@ -8,7 +8,7 @@ from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
 
 SITE_IDENTIFIER = 'watchbox_to'
-SITE_NAME = 'Watchbox.to'
+SITE_NAME = 'WatchBox.to'
 SITE_ICON = 'watchbox_to.png'
 SITE_GLOBAL_SEARCH = False
 
