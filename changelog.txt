@@ -1,4 +1,5 @@
  Nightly Updates
+ - Add Kinoger
 - [Cinematrix.to] Seite hinzugefügt 
 - [moviex.co] Seite hinzugefügt
 
