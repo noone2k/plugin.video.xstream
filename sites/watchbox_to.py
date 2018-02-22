@@ -121,7 +121,7 @@ def showHosters():
     hosters = []
     if isMatch:
         for sUrl, sName in aResult:
-            hoster = {'link': sUrl, 'name': sName + sUrl}
+            hoster = {'link': sUrl, 'name': sName}
             hosters.append(hoster)
     if hosters:
         hosters.append('getHosterUrl')
