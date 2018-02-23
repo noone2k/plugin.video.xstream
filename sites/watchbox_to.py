@@ -133,9 +133,8 @@ def getHosterUrl(sUrl=False):
         oRequest = cRequestHandler(sUrl)
         sHtmlContent = oRequest.request()
         pattern = '<button[^>]href="([^"]+)'
-        isMatch, sNextUrl = cParser().parseSingleResult(sHtmlContent, pattern)
+        isMatch, sUrl = cParser().parseSingleResult(sHtmlContent, pattern)
         if isMatch:
-            sUrl = re.compile(pattern).findall(sHtmlContent)[0]
             oRequest = cRequestHandler('https://www.filecrypt.cc/' + sUrl)
             sHtmlContent = oRequest.request()
             pattern = '''(http[^"']+)'''
