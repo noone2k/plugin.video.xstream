@@ -1,4 +1,5 @@
  Nightly Updates
+- [Kinostern] Seite hinzugefügt
 - [Watchbox.de] Optimize code, Add Fanart, Seitenname angepasst & Globale Suche standartmäßig deaktiviert
 - [Watchbox.to] Seite hinzugefügt
 - [Kinoger.com] Seite hinzugefügt
