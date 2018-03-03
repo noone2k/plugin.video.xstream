@@ -1,4 +1,7 @@
  Nightly Updates
+ 
+ xStream 3.4.7
+ 
 - [Streamdream.ws] Fix Serien [tnx koditorsten] 
 - [Kinostern] Seite hinzugefügt
 - [Watchbox.de] Optimize code, Add Fanart, Seitenname angepasst & Globale Suche standartmäßig deaktiviert
