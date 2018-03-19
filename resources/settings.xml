@@ -43,10 +43,6 @@
     <setting default="true" id="plugin_cinematrix_to" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_cinematrix_to" label="30052" type="bool" />
     <setting type="sep" />
-    <setting label="Cinenator" type="lsep" />
-    <setting default="true" id="plugin_cinenator_com" label="30050" type="bool" />
-    <setting default="true" enable="!eq(-1,false)" id="global_search_cinenator_com" label="30052" type="bool" />
-    <setting type="sep" />
     <setting label="DirectDownLoad" type="lsep" />
     <setting default="true" id="plugin_ddl_me" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_ddl_me" label="30052" type="bool" />
@@ -105,6 +101,10 @@
     <setting default="true" id="plugin_movie2k_ag" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_movie2k_ag" label="30052" type="bool" />
     <setting type="sep" />
+    <setting label="Movie2k SH" type="lsep" />
+    <setting default="true" id="plugin_movie2k_sh" label="30050" type="bool" />
+    <setting default="true" enable="!eq(-1,false)" id="global_search_movie2k_sh" label="30052" type="bool" />
+    <setting type="sep" />
     <setting label="Movie4k" type="lsep" />
     <setting default="true" id="plugin_movie4k_to" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_movie4k_to" label="30052" type="bool" />
@@ -153,6 +153,10 @@
     <setting label="SzeneStreams" type="lsep" />
     <setting default="true" id="plugin_szene-streamz_com" label="30050" type="bool" />
     <setting default="true" enable="!eq(-1,false)" id="global_search_szene-streamz_com" label="30052" type="bool" />
+    <setting type="sep" />
+    <setting label="TMovie" type="lsep" />
+    <setting default="true" id="plugin_tmovie_to" label="30050" type="bool" />
+    <setting default="true" enable="!eq(-1,false)" id="global_search_tmovie_to" label="30052" type="bool" />
     <setting type="sep" />
     <setting label="View4U" type="lsep" />
     <setting default="true" id="plugin_view4u_co" label="30050" type="bool" />
