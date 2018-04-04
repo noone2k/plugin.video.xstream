@@ -1,4 +1,5 @@
  Nightly Updates
+ - [Movies.gg] Seite hinzugefügt
  - [Foxx.to] Fix Hoster
  - [TMovie.to] Seite hinzugefügt
  - [HD-Streams_org] Fix Hoster
