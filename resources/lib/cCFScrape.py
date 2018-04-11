@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-import mechanize
-import urllib
-import re
-import sys
+import urllib, urllib2, re, sys
 from time import sleep
 from urlparse import urlparse
-from resources.lib import logger, cookie_helper
+from resources.lib import logger
 
-# thanks vStream
 def checkpart(s, sens):
     number = 0
     p = 0
@@ -46,8 +42,6 @@ def parseInt(s):
         val = chain.split('/')
         links, sizeg = checkpart(val[0], -1)
         rechts, sized = checkpart(val[1], 1)
-        sign = ''
-        chain = rechts.replace(rechts, '')
 
         if rechts.startswith('+') or rechts.startswith('-'):
             rechts = rechts[1:]
@@ -70,19 +64,19 @@ class cCFScrape:
         except Exception as e:
             logger.info(e)
 
-        opener = mechanize.build_opener(mechanize.HTTPCookieProcessor(cookie_jar))
-        request = mechanize.Request(url)
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
+        request = urllib2.Request(url)
         for key in headers:
             request.add_header(key, headers[key])
 
         try:
             response = opener.open(request)
-        except mechanize.HTTPError as e:
+        except urllib2.HTTPError as e:
             response = e
 
         body = response.read()
         cookie_jar.extract_cookies(response, request)
-        cookie_helper.check_cookies(cookie_jar)
+        cCFScrape.__checkCookie(cookie_jar)
         parsed_url = urlparse(url)
         submit_url = "%s://%s/cdn-cgi/l/chk_jschl" % (parsed_url.scheme, parsed_url.netloc)
         params = {}
@@ -96,14 +90,14 @@ class cCFScrape:
 
         params["jschl_answer"] = js
         sParameters = urllib.urlencode(params, True)
-        request = mechanize.Request("%s?%s" % (submit_url, sParameters))
+        request = urllib2.Request("%s?%s" % (submit_url, sParameters))
         for key in headers:
             request.add_header(key, headers[key])
         sleep(5)
 
         try:
             response = opener.open(request)
-        except mechanize.HTTPError as e:
+        except urllib2.HTTPError as e:
             response = e
         return response
 
