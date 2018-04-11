@@ -6,6 +6,7 @@
  - [HD-Streams_org] Fix Hoster
  - Cinenator entfernt (Seite offline)
  - [Onlinefilme] Fix Hoster
+ - Update cCFScrape.py
  
  xStream 3.4.7
  
