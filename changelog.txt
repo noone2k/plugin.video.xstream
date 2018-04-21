@@ -1,4 +1,7 @@
  Nightly Updates
+ 
+  xStream 3.4.8
+ 
  - [streamit.ws] fix Seite
  - [Kinox.one] Seite hinzugefügt
  - [Movies.gg] Seite hinzugefügt
