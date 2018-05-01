@@ -13,7 +13,7 @@ from resources.lib.parser import cParser
 SITE_IDENTIFIER = 'movie4k_to'
 SITE_NAME = 'Movie4k'
 SITE_ICON = 'movie4k.png'
-SITE_SETTINGS = '<setting default="movie4k.tv" enable="!eq(-2,false)" id="movie4k_to-domain" label="30051" type="labelenum" values="movie4k.to|movie4k.tv|movie.to|movie4k.me|movie4k.org|movie4k.pe|movie4k.am" />'
+SITE_SETTINGS = '<setting default="movie4k.io" enable="!eq(-2,false)" id="movie4k_to-domain" label="30051" type="labelenum" values="movie4k.to|movie4k.tv|movie.to|movie4k.me|movie4k.org|movie4k.pe|movie4k.am|movie4k.io" />'
 oConfig = cConfig()
 DOMAIN = oConfig.getSetting('movie4k_to-domain')
 ####
