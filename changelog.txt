@@ -1,4 +1,6 @@
  Nightly Updates
+ - Update CFScraper
+ - Update movie4k (Domain Update auf .io)
  
   xStream 3.4.8
  
