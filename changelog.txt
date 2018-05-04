@@ -1,6 +1,6 @@
  Nightly Updates
  - Update CFScraper
- - Update movie4k (Domain Update auf .io)
+ - [movie4k] dirty fast fix
  
   xStream 3.4.8
  
