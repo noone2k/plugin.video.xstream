@@ -2,6 +2,8 @@
  - Update CFScraper
  - [movie4k] dirty fast fix
  - [Foxx] Fix
+ - [moviex.co] entfernt seite aufgegeben ersetzt durch Movies.gg
+ - [cine.to] entfernt benutzt recaptcha
  
   xStream 3.4.8
  
