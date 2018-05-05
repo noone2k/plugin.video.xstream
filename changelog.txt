@@ -1,6 +1,7 @@
  Nightly Updates
  - Update CFScraper
  - [movie4k] dirty fast fix
+ - [Foxx] Fix
  
   xStream 3.4.8
  
