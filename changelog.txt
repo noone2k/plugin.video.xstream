@@ -1,5 +1,6 @@
  Nightly Updates
  - Update CFScraper
+ - [watchbox.to] fix
  - [movie4k] dirty fast fix
  - [Foxx] Fix
  - [moviex.co] entfernt seite aufgegeben ersetzt durch Movies.gg
