@@ -52,7 +52,7 @@ def showEntries(entryUrl=False, sGui=False):
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
 
     sHtmlContent = oRequest.request()
-    pattern = 'TPostMv">.*?<a[^>]href="([^"]+)">.*?[^>]src="([^"]+)".*?<h2[^>]class="Title">([^<]+).*?<span[^>]class="Year">([^<]+).*?<div[^>]class="Description">([^"]+)</p>'
+    pattern = '<article[^>]id.*?<a[^>]href="([^"]+)">.*?[^>]src="([^"]+)".*?<h2[^>]class="Title">([^<]+).*?<span[^>]class="Year">([^<]+).*?<div[^>]class="Description">([^"]+)</p>'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
 
     if not isMatch:
