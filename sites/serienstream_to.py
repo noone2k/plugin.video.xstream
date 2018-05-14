@@ -12,6 +12,7 @@ from resources.lib.parser import cParser
 SITE_IDENTIFIER = 'serienstream_to'
 SITE_NAME = 'SerienStream'
 SITE_ICON = 'serienstream.png'
+SITE_SETTINGS = '<setting id="serienstream.user" type="text" label="30083" default="" /><setting id="serienstream.pass" type="text" option="hidden" label="30084" default="" />'
 
 URL_MAIN = 'https://s.to'
 URL_SERIES = URL_MAIN + '/serien'
