@@ -1,4 +1,5 @@
  Nightly Updates
+ - [serienstream.to] fix hoster & code cleanup
  - Update CFScraper
  - [watchbox.to] fix
  - [movie4k] dirty fast fix
