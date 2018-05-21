@@ -1,4 +1,6 @@
  Nightly Updates
+ - [bs.to] API KEY funktioniert nicht mehr
+ - {xStream.py] code cleanup
  - [serienstream.to] fix hoster & code cleanup
  - Update CFScraper
  - [watchbox.to] fix
