@@ -62,7 +62,8 @@ def showLinkList():
 def showAllSeries(entryUrl=False, sGui=False, sSearchText=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
-    entryUrl = params.getValue('sUrl')
+    if not entryUrl:
+        entryUrl = params.getValue('sUrl')
     sHtmlContent = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False)).request()
     pattern = '<a[^>]*href="(\/serie\/[^"]*)"[^>]*>(.*?)</a>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
@@ -87,7 +88,8 @@ def showAllSeries(entryUrl=False, sGui=False, sSearchText=False):
 def showEntries(entryUrl=False, sGui=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
-    entryUrl = params.getValue('sUrl')
+    if not entryUrl:
+        entryUrl = params.getValue('sUrl')
     request = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     sHtmlContent = request.request()
     pattern = '<div[^>]*class="col-md-[^"]*"[^>]*>.*?'  # start element
