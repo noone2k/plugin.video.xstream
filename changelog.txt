@@ -1,4 +1,5 @@
  Nightly Updates
+ - [serienstream.to] Fix Suche tnx sP4rK
  - [bs.to] API KEY funktioniert nicht mehr
  - {xStream.py] code cleanup
  - [serienstream.to] fix hoster & code cleanup
