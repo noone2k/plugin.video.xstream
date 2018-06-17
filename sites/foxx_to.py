@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import re, base64
+from resources.lib.cCFScrape import cCFScrape
 from resources.lib.gui.gui import cGui
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
 from resources.lib.util import cUtil
-from resources.lib.cCFScrape import cCFScrape
 
 SITE_IDENTIFIER = 'foxx_to'
 SITE_NAME = 'Foxx'
@@ -16,9 +15,7 @@ URL_MAIN = 'https://foxx.to/'
 URL_FILME = URL_MAIN + 'film'
 URL_SERIE = URL_MAIN + 'serie'
 URL_SEARCH = URL_MAIN + '?s=%s'
-
-QUALITY_ENUM = {'240p': 0, '360p': 1, '480p': 2, '720p': 3, '1080p': 4, '240': 0, '360': 1, '480': 2, '720': 3,
-                '1080': 4}
+QUALITY_ENUM = {'240p': 0, '360p': 1, '480p': 2, '720p': 3, '1080p': 4, '240': 0, '360': 1, '480': 2, '720': 3, '1080': 4}
 
 
 def load():
@@ -52,6 +49,8 @@ def showGenres():
         return
 
     for sUrl, sName in aResult:
+        if sUrl.startswith('//'):
+            sUrl = 'https:' + sUrl
         sName = cUtil.cleanse_text(sName)
         params.setParam('sUrl', sUrl)
         oGui.addFolder(cGuiElement(sName.strip(), SITE_IDENTIFIER, 'showEntries'), params)
@@ -71,17 +70,14 @@ def showEntries(entryUrl=False, sGui=False):
         if not sGui: oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
-    cf_cookie = cCFScrape().createUrl(entryUrl, oRequest).replace(entryUrl, '')
-
     total = len(aResult)
     for sThumbnail, sName, sUrl, sYear, sDesc in aResult:
-        sThumbnail = re.sub('-\d+x\d+\.', '.', sThumbnail)
         isTvshow = True if "serie" in sUrl else False
         if sThumbnail and not sThumbnail.startswith('http'):
-            sThumbnail = URL_MAIN + sThumbnail
-
-        sThumbnail += cf_cookie
-        
+            sThumbnail = 'https:' + sThumbnail
+        sThumbnail = cCFScrape.createUrl(sThumbnail, oRequest)
+        if sUrl.startswith('//'):
+            sUrl = 'https:' + sUrl
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons' if isTvshow else 'showHosters')
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
@@ -98,6 +94,8 @@ def showEntries(entryUrl=False, sGui=False):
         pattern = '"next"[^>]*href="([^"]+)'
         isMatchNextPage, sNextUrl = cParser.parseSingleResult(sHtmlContent, pattern)
         if isMatchNextPage:
+            if sNextUrl.startswith('//'):
+                sNextUrl = 'https:' + sNextUrl
             params.setParam('sUrl', sNextUrl)
             oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
         oGui.setView('tvshows' if 'serie' in sUrl else 'movies')
@@ -156,6 +154,8 @@ def showEpisodes():
 
     total = len(aResult)
     for sUrl, sEpisodeNr in aResult:
+        if sUrl.startswith('//'):
+            sUrl = 'https:' + sUrl
         oGuiElement = cGuiElement(sEpisodeNr, SITE_IDENTIFIER, 'showHosters')
         oGuiElement.setTVShowTitle(sTVShowTitle)
         oGuiElement.setSeason(sSeasonNr)
@@ -172,58 +172,46 @@ def showHosters():
     sUrl = ParameterHandler().getValue('entryUrl')
     sHtmlContent = cRequestHandler(sUrl).request()
     pattern = 'src="([^"]+)"[^>]*frameborder'
-    isMatch, aResult = cParser().parse(sHtmlContent, pattern)
+    aResult = cParser().parse(sHtmlContent, pattern)
     hosters = []
-    if not isMatch:
-        return False
-    
-    for hUrl in aResult:
+    for hUrl in aResult[1]:
         if not hUrl.startswith('http'):
-            hUrl = URL_MAIN[:-1] + hUrl
-            
-        oRequest = cRequestHandler(hUrl)
-        oRequest.addHeaderEntry('Referer', hUrl)
-        sHtmlContent = oRequest.request()
-
+            hUrl = 'https:' + hUrl
         if 'view.php' in hUrl:
-            isMatch, sUrl = cParser().parseSingleResult(sHtmlContent, "jbdaskgs\s*=\s*'([^']+)'")
-            if not isMatch: 
-                continue
-
-            sUrl = base64.b64decode(sUrl)
-            isMatch, link = cParser.parseSingleResult(sUrl, 'file"\s*:\s*"([^"]+)"')
-            if not isMatch: 
-                continue
-
-            hoster = {'link': link, 'name': 'Play'}
-            hosters.append(hoster)
-        elif 'watch.php' in hUrl:
-            r = re.search('"label"\s*:\s*"([^"]+)",\s*"file"\s*:\s*"([^"]+)"', sHtmlContent)
-            if not r:
-                continue
-
-            hoster = {'link': r.group(2), 'name': r.group(1)}
-            hosters.append(hoster)
-        elif 'wp-embed.php' in hUrl:
-            isMatch, sUrl = cParser.parseSingleResult(sHtmlContent, '<iframe[^>]src="([^"]+)')
-            if not isMatch:
-                continue
-            
-	    isMatch, hname = cParser().parseSingleResult(sUrl, '^(?:https?://)?(?:[^@\n]+@)?([^:/\n]+)')
-	    hoster = {'link': sUrl, 'name': hname}
-	    hosters.append(hoster)
-	    
+            oRequest = cRequestHandler(hUrl)
+            oRequest.addHeaderEntry('Referer', hUrl)
+            sHtmlContent = oRequest.request()
+            aResult = cParser().parse(sHtmlContent, "jbdaskgs[^>]=[^>]'([^']+)")
+            for sUrl in aResult[1]:
+                import base64
+                sUrl = base64.b64decode(sUrl)
+                isMatch, aResult = cParser.parse(sUrl, '"file":"([^"]+).*?label":"([^"]+)')
+                for sUrl, sQuality in aResult:
+                    hoster = {'link': sUrl, 'name': sQuality, 'quality': QUALITY_ENUM[sQuality]}
+                    hosters.append(hoster)
+        if 'wp-embed.php' in hUrl:
+            oRequest = cRequestHandler(hUrl)
+            oRequest.addHeaderEntry('Referer', hUrl)
+            sHtmlContent = oRequest.request()
+            aResult = cParser.parse(sHtmlContent, '<iframe[^>]src="([^"]+)')
+            for sUrl in aResult[1]:
+                isMatch, hname = cParser().parseSingleResult(sUrl, '^(?:https?://)?(?:[^@\n]+@)?([^:/\n]+)')
+                hoster = {'link': sUrl, 'name': hname}
+                hosters.append(hoster)
     if hosters:
         hosters.append('getHosterUrl')
     return hosters
 
 
 def getHosterUrl(sUrl=False):
-    if 'foxx' in sUrl:
+    if 'videoplayback' in sUrl:
         entryUrl = ParameterHandler().getValue('entryUrl')
         return [{'streamUrl': sUrl + '|Referer=' + entryUrl + '|User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0', 'resolved': True}]
+    if 'google' in sUrl:
+        return [{'streamUrl': sUrl, 'resolved': True}]
     else:
         return [{'streamUrl': sUrl, 'resolved': False}]
+
 
 def showSearchEntries(entryUrl=False, sGui=False):
     oGui = sGui if sGui else cGui()
@@ -238,16 +226,14 @@ def showSearchEntries(entryUrl=False, sGui=False):
         if not sGui: oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
-    cf_cookie = cCFScrape().createUrl(entryUrl, oRequest).replace(entryUrl, '')
-
     total = len(aResult)
-    for sUrl,  sThumbnail, sName, sYear, sDesc in aResult:
-        sThumbnail = re.sub('-\d+x\d+\.', '.', sThumbnail)
+    for sUrl, sThumbnail, sName, sYear, sDesc in aResult:
         if sThumbnail and not sThumbnail.startswith('http'):
-            sThumbnail = URL_MAIN + sThumbnail
+            sThumbnail = 'https:' + sThumbnail
+        sThumbnail = cCFScrape.createUrl(sThumbnail, oRequest)
 
-        sThumbnail += cf_cookie
-        
+        if sUrl.startswith('//'):
+            sUrl = 'https:' + sUrl
         isTvshow = True if "serie" in sUrl else False
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons' if isTvshow else 'showHosters')
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
@@ -265,6 +251,8 @@ def showSearchEntries(entryUrl=False, sGui=False):
         pattern = "span[^>]*class=[^>]*current[^>]*>.*?</span><a[^>]*href='([^']+)"
         isMatchNextPage, sNextUrl = cParser.parseSingleResult(sHtmlContent, pattern)
         if isMatchNextPage:
+            if sNextUrl.startswith('//'):
+                sNextUrl = 'https:' + sNextUrl
             params.setParam('sUrl', sNextUrl)
             oGui.addNextPage(SITE_IDENTIFIER, 'showSearchEntries', params)
         oGui.setView('tvshows' if 'serie' in sUrl else 'movies')
