@@ -5,7 +5,6 @@ from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
-from resources.lib.util import cUtil
 
 SITE_IDENTIFIER = 'foxx_to'
 SITE_NAME = 'Foxx'
@@ -51,7 +50,6 @@ def showGenres():
     for sUrl, sName in aResult:
         if sUrl.startswith('//'):
             sUrl = 'https:' + sUrl
-        sName = cUtil.cleanse_text(sName)
         params.setParam('sUrl', sUrl)
         oGui.addFolder(cGuiElement(sName.strip(), SITE_IDENTIFIER, 'showEntries'), params)
     oGui.setEndOfDirectory()
@@ -63,7 +61,7 @@ def showEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     sHtmlContent = oRequest.request()
-    pattern = '<div[^>]*class="poster"><img src="([^"]+)"[^>]alt="([^"]+).*?</div><a href="([^"]+).*?<span>([\d]+)</span>.*?<div[^>]class="texto">([^"]+)</div>'
+    pattern = '<div[^>]*class="poster"><img src="([^"]+)"[^>]alt="([^"]+).*?</div><a href="([^"]+).*?(.*?)<span>([\d]+)</span>.*?<div[^>]class="texto">([^"]+)</div>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -71,7 +69,7 @@ def showEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sThumbnail, sName, sUrl, sYear, sDesc in aResult:
+    for sThumbnail, sName, sUrl, sDummy, sYear, sDesc in aResult:
         isTvshow = True if "serie" in sUrl else False
         if sThumbnail and not sThumbnail.startswith('http'):
             sThumbnail = 'https:' + sThumbnail
@@ -82,9 +80,12 @@ def showEntries(entryUrl=False, sGui=False):
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
+        if 'de.png' in sDummy:
+            oGuiElement.setLanguage('Deutsch')
+        if 'en.png' in sDummy:
+            oGuiElement.setLanguage('Englisch')
         oGuiElement.setYear(sYear)
         oGuiElement.setDescription(sDesc)
-        sUrl = cUtil.quotePlus(sUrl)
         params.setParam('entryUrl', sUrl)
         params.setParam('sName', sName)
         params.setParam('sThumbnail', sThumbnail)
@@ -219,7 +220,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl)
     sHtmlContent = oRequest.request()
-    pattern = '2"><a[^>]href="([^"]+)"><img[^>]src="([^"]+)" alt="([^"]+).*?<span[^>]class="year">([\d]+)<.*?(?:<div[^>]class="contenido"><p>([^<]+)?)'
+    pattern = '2"><a[^>]href="([^"]+)"><img[^>]src="([^"]+)" alt="([^"]+).*?<span[^>]class="year">([\d]+)(.*?)(?:<div[^>]class="contenido"><p>([^<]+)?)'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -227,11 +228,10 @@ def showSearchEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sUrl, sThumbnail, sName, sYear, sDesc in aResult:
+    for sUrl, sThumbnail, sName, sYear, sDummy, sDesc in aResult:
         if sThumbnail and not sThumbnail.startswith('http'):
             sThumbnail = 'https:' + sThumbnail
         sThumbnail = cCFScrape.createUrl(sThumbnail, oRequest)
-
         if sUrl.startswith('//'):
             sUrl = 'https:' + sUrl
         isTvshow = True if "serie" in sUrl else False
@@ -240,8 +240,11 @@ def showSearchEntries(entryUrl=False, sGui=False):
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
         oGuiElement.setYear(sYear)
+        if 'de.png' in sDummy:
+            oGuiElement.setLanguage('Deutsch')
+        if 'en.png' in sDummy:
+            oGuiElement.setLanguage('Englisch')
         oGuiElement.setDescription(sDesc)
-        sUrl = cUtil.quotePlus(sUrl)
         params.setParam('entryUrl', sUrl)
         params.setParam('sName', sName)
         params.setParam('sThumbnail', sThumbnail)
@@ -255,7 +258,6 @@ def showSearchEntries(entryUrl=False, sGui=False):
                 sNextUrl = 'https:' + sNextUrl
             params.setParam('sUrl', sNextUrl)
             oGui.addNextPage(SITE_IDENTIFIER, 'showSearchEntries', params)
-        oGui.setView('tvshows' if 'serie' in sUrl else 'movies')
         oGui.setEndOfDirectory()
 
 
@@ -270,3 +272,4 @@ def showSearch():
 def _search(oGui, sSearchText):
     if not sSearchText: return
     showSearchEntries(URL_SEARCH % sSearchText.strip(), oGui)
+      
