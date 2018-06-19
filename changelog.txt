@@ -1,4 +1,5 @@
- Nightly Updates
+ Nightly Update
+ - Fix foxx
  - kinodogs.to entfernt (Seite offline)
  - seriesever.net entfernt (Seite offline)
  - tmovie.to entfernt (Seite offline)
