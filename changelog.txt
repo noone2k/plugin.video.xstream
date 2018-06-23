@@ -1,11 +1,12 @@
  Nightly Update
+ - [Cinemaxx_cc] Seite hinzugefügt
  - Fix foxx
  - kinodogs.to entfernt (Seite offline)
  - seriesever.net entfernt (Seite offline)
  - tmovie.to entfernt (Seite offline)
  - foxx.to (Anpassung in der Bildanzeige und die Hosterermittlung wurde gefixt)
  - [serienstream.to] Fix Suche tnx sP4rK
- - [bs.to] API KEY funktioniert nicht mehr
+ - [bs.to] entfernt API KEY funktioniert nicht mehr
  - {xStream.py] code cleanup
  - [serienstream.to] fix hoster & code cleanup
  - Update CFScraper
