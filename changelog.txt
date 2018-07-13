@@ -1,4 +1,6 @@
  Nightly Update
+ - [Filmmerstube] Fix Next page
+ - [HDKino] Seite hinzugefügt
  - [Cinemaxx_cc] Seite hinzugefügt
  - Fix foxx
  - kinodogs.to entfernt (Seite offline)
