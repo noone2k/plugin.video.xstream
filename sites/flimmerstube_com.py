@@ -71,7 +71,7 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=None):
         params.setParam('entryUrl', URL_MAIN + sUrl)
         oGui.addFolder(oGuiElement, params, False, total)
     if not sGui:
-        pattern = 'onclick="spages[^>][^>]([^"]+)[^>][^>];return[^>]false;"><span>&raquo;</span></a></span></td></tr></table>.*?location.href=[^>]([^"]+)[^>][^>]page[^>]'
+        pattern = "spages[^>][^>]([^']+)[^>][^>];return[^>]false;[^>]><span>&raquo;.*?location.href = '([^']+)"
         aResult = cParser().parse(sHtmlContent, pattern)
         if aResult[0] and aResult[1][0]:
             for sNr, Url in aResult[1]:
