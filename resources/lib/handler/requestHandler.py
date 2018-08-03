@@ -31,10 +31,6 @@ class cRequestHandler:
         if self.requestTimeout >= 60 or self.requestTimeout <= 10:
             self.requestTimeout = 60
 
-    def set_data(self, data):
-        ' Set the data (a bytestring) to be sent with this request '
-        self.data = data
-
     def removeNewLines(self, bRemoveNewLines):
         self.__bRemoveNewLines = bRemoveNewLines
 
