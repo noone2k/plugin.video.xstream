@@ -1,3 +1,5 @@
+Nightly:
+- Update auf urllib2
 - add alleserien.com
 
 xStream 3.4.9
