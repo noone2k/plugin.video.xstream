@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
-import mechanize
-
+import sys, cookielib
 
 #from kennethreitz module "requests"
 def create_cookie(name, value, **kwargs):
@@ -34,8 +32,7 @@ def create_cookie(name, value, **kwargs):
     result['domain_specified'] = bool(result['domain'])
     result['domain_initial_dot'] = result['domain'].startswith('.')
     result['path_specified'] = bool(result['path'])
-
-    return mechanize.Cookie(**result)
+    return cookielib.Cookie(**result)
 
 
 def check_cookies(cookie_jar):
