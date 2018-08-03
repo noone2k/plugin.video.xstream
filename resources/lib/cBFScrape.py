@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import mechanize, re, sys
-from binascii import unhexlify
-from binascii import hexlify
+import re, sys, urllib2
+from binascii import hexlify, unhexlify
+from urlparse import urlparse
 from resources.lib import logger, pyaes, cookie_helper
 from resources.lib.parser import cParser
-from urlparse import urlparse
+
 
 class cBFScrape:
-
     COOKIE_NAME = 'BLAZINGFAST-WEB-PROTECT'
 
     def resolve(self, url, cookie_jar, user_agent):
@@ -18,15 +17,15 @@ class cBFScrape:
         except Exception as e:
             logger.info(e)
 
-        opener = mechanize.build_opener(mechanize.HTTPCookieProcessor(cookie_jar))
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
 
-        request = mechanize.Request(url)
+        request = urllib2.Request(url)
         for key in headers:
             request.add_header(key, headers[key])
 
         try:
             response = opener.open(request)
-        except mechanize.HTTPError as e:
+        except urllib2.HTTPError as e:
             response = e
 
         body = response.read()
@@ -42,18 +41,15 @@ class cBFScrape:
         parsed_url = urlparse(url)
         sid = '1200'
         script_url = '%s://%s%s%s%s' % (parsed_url.scheme, parsed_url.netloc, urlParts[0], sid, urlParts[2])
-
-        request = mechanize.Request(script_url)
+        request = urllib2.Request(script_url)
         for key in headers:
             request.add_header(key, headers[key])
-
         try:
             response = opener.open(request)
-        except mechanize.HTTPError as e:
+        except urllib2.HTTPError as e:
             response = e
 
         body = response.read()
-
         cookie_jar.extract_cookies(response, request)
         cookie_helper.check_cookies(cookie_jar)
 
@@ -66,29 +62,26 @@ class cBFScrape:
         name, value = cookie.split(';')[0].split('=')
         cookieData = dict((k.strip(), v.strip()) for k, v in (item.split("=") for item in cookie.split(";")))
         cookie = cookie_helper.create_cookie(name, value, domain=cookieData['domain'], expires=sys.maxint, discard=False)
-
         cookie_jar.set_cookie(cookie)
-
-        request = mechanize.Request(url)
+        request = urllib2.Request(url)
         for key in headers:
             request.add_header(key, headers[key])
 
         try:
             response = opener.open(request)
-        except mechanize.HTTPError as e:
+        except urllib2.HTTPError as e:
             response = e
-
         return response
 
     def checkBFCookie(self, content):
-        '''
+        """
         returns True if there seems to be a protection
-        '''
+        """
         return cBFScrape.COOKIE_NAME in content
 
-    #not very robust but lazieness...
+    # not very robust but lazieness...
     def getCookieString(self, content):
-        vars = re.findall('toNumbers\("([^"]+)"',content)
+        vars = re.findall('toNumbers\("([^"]+)"', content)
         if not vars:
             logger.info('vars not found')
             return False
@@ -97,7 +90,7 @@ class cBFScrape:
             logger.info('value decryption failed')
             return False
         pattern = '"%s=".*?";([^"]+)"' % cBFScrape.COOKIE_NAME
-        cookieMeta = re.findall(pattern,content)
+        cookieMeta = re.findall(pattern, content)
         if not cookieMeta:
             logger.info('cookie meta not found')
         cookie = "%s=%s;%s" % (cBFScrape.COOKIE_NAME, value, cookieMeta[0])
@@ -109,7 +102,7 @@ class cBFScrape:
         key = unhexlify(key)
         iv = unhexlify(iv)
         if len(iv) != 16:
-            logger.info("iv length is" + str(len(iv)) +" must be 16.")
+            logger.info("iv length is" + str(len(iv)) + " must be 16.")
             return False
         decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(key, iv))
         plain_text = decrypter.feed(msg)
