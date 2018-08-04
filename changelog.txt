@@ -1,4 +1,5 @@
 Nightly:
+- Abhängigkeit von script.module.mechanize entfernt
 - Code Optimierung
 - Update auf urllib2
 - add alleserien.com
