@@ -1,4 +1,7 @@
 Nightly:
+
+xStream 3.5.0
+  04.08.2018
 - Abhängigkeit von script.module.mechanize entfernt
 - Code Optimierung
 - Update auf urllib2
