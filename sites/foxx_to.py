@@ -51,7 +51,7 @@ def showGenres():
         if sUrl.startswith('//'):
             sUrl = 'https:' + sUrl
         params.setParam('sUrl', sUrl)
-        oGui.addFolder(cGuiElement(sName.strip(), SITE_IDENTIFIER, 'showEntries'), params)
+        oGui.addFolder(cGuiElement(sName, SITE_IDENTIFIER, 'showEntries'), params)
     oGui.setEndOfDirectory()
 
 
@@ -61,7 +61,7 @@ def showEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     sHtmlContent = oRequest.request()
-    pattern = '<div[^>]*class="poster"><img src="([^"]+)"[^>]alt="([^"]+).*?</div><a href="([^"]+).*?(.*?)<span>([\d]+)</span>.*?<div[^>]class="texto">([^"]+)</div>'
+    pattern = '<div[^>]*class="poster"><img[^>]src="([^"]+)"[^>]alt="([^"]+).*?(.*?)<a[^>]href="([^"]+).*?<span>([\d]+)</span>.*?<div[^>]class="texto">([^"]+)</div>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -69,9 +69,9 @@ def showEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sThumbnail, sName, sUrl, sDummy, sYear, sDesc in aResult:
+    for sThumbnail, sName, sDummy, sUrl, sYear, sDesc in aResult:
         isTvshow = True if "serie" in sUrl else False
-        if sThumbnail and not sThumbnail.startswith('http'):
+        if sThumbnail.startswith('//'):
             sThumbnail = 'https:' + sThumbnail
         sThumbnail = cCFScrape.createUrl(sThumbnail, oRequest)
         if sUrl.startswith('//'):
@@ -80,9 +80,9 @@ def showEntries(entryUrl=False, sGui=False):
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
-        if 'de.png' in sDummy:
+        if 'German' in sDummy:
             oGuiElement.setLanguage('Deutsch')
-        if 'en.png' in sDummy:
+        if 'English' in sDummy:
             oGuiElement.setLanguage('Englisch')
         oGuiElement.setYear(sYear)
         oGuiElement.setDescription(sDesc)
@@ -183,12 +183,13 @@ def showHosters():
             oRequest.addHeaderEntry('Referer', hUrl)
             sHtmlContent = oRequest.request()
             aResult = cParser().parse(sHtmlContent, "jbdaskgs[^>]=[^>]'([^']+)")
+            cf = cCFScrape.createUrl(sUrl, oRequest)
             for sUrl in aResult[1]:
                 import base64
                 sUrl = base64.b64decode(sUrl)
                 isMatch, aResult = cParser.parse(sUrl, '"file":"([^"]+).*?label":"([^"]+)')
                 for sUrl, sQuality in aResult:
-                    hoster = {'link': sUrl, 'name': sQuality, 'quality': QUALITY_ENUM[sQuality]}
+                    hoster = {'link': sUrl + cf, 'name': sQuality, 'quality': QUALITY_ENUM[sQuality]}
                     hosters.append(hoster)
         if 'wp-embed.php' in hUrl:
             oRequest = cRequestHandler(hUrl)
@@ -205,10 +206,7 @@ def showHosters():
 
 
 def getHosterUrl(sUrl=False):
-    if 'videoplayback' in sUrl:
-        entryUrl = ParameterHandler().getValue('entryUrl')
-        return [{'streamUrl': sUrl + '|Referer=' + entryUrl + '|User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0', 'resolved': True}]
-    if 'google' in sUrl:
+    if 'foxx' in sUrl or 'google' in sUrl:
         return [{'streamUrl': sUrl, 'resolved': True}]
     else:
         return [{'streamUrl': sUrl, 'resolved': False}]
@@ -220,7 +218,7 @@ def showSearchEntries(entryUrl=False, sGui=False):
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl)
     sHtmlContent = oRequest.request()
-    pattern = '2"><a[^>]href="([^"]+)"><img[^>]src="([^"]+)" alt="([^"]+).*?<span[^>]class="year">([\d]+)(.*?)(?:<div[^>]class="contenido"><p>([^<]+)?)'
+    pattern = '2"><a[^>]href="([^"]+)"><img[^>]src="([^"]+)"[^>]alt="([^"]+).*?<span[^>]class="year">([\d]+)(.*?)(?:<div[^>]class="contenido"><p>([^<]+)?)'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -272,4 +270,3 @@ def showSearch():
 def _search(oGui, sSearchText):
     if not sSearchText: return
     showSearchEntries(URL_SEARCH % sSearchText.strip(), oGui)
-      
