@@ -1,5 +1,6 @@
 Nightly:
 - Fix Foxx
+- Fix Foxx hoster google
 
 xStream 3.5.0
   04.08.2018
