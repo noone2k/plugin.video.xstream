@@ -189,7 +189,10 @@ def showHosters():
                 sUrl = base64.b64decode(sUrl)
                 isMatch, aResult = cParser.parse(sUrl, '"file":"([^"]+).*?label":"([^"]+)')
                 for sUrl, sQuality in aResult:
-                    hoster = {'link': sUrl + cf, 'name': sQuality, 'quality': QUALITY_ENUM[sQuality]}
+                    if 'google' in sUrl:
+                        hoster = {'link': sUrl, 'name': sQuality + sUrl, 'quality': QUALITY_ENUM[sQuality]}
+                    else:
+                        hoster = {'link': sUrl + cf, 'name': sQuality + sUrl, 'quality': QUALITY_ENUM[sQuality]}
                     hosters.append(hoster)
         if 'wp-embed.php' in hUrl:
             oRequest = cRequestHandler(hUrl)
