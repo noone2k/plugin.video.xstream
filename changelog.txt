@@ -1,4 +1,5 @@
 Nightly:
+- [hdfilme.tv] Fix Hoster
 - Fix Foxx
 - Fix Foxx hoster google
 
