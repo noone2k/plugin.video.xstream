@@ -5,9 +5,8 @@ from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
 from resources.lib import logger
 from resources.lib.handler.ParameterHandler import ParameterHandler
-
 from resources.lib.cCFScrape import cCFScrape
-import re, json, base64
+import re, base64
 
 # Plugin-Eigenschaften
 SITE_IDENTIFIER = 'hdfilme_tv'
@@ -15,7 +14,7 @@ SITE_NAME = 'HDfilme'
 SITE_ICON = 'hdfilme.png'
 
 # Basis-URL's
-URL_MAIN = 'http://hdfilme.tv/'
+URL_MAIN = 'https://hdfilme.tv/'
 URL_MOVIES = URL_MAIN + 'movie-movies?'
 URL_SHOWS = URL_MAIN + 'movie-series?'
 URL_SEARCH = URL_MAIN + 'movie-search?key=%s'
@@ -389,57 +388,40 @@ def getHosters(sUrl=False):
         hosters.append('play')
     return hosters
 
-
 def _getHostFromUrl(sID, sEpisode, sServername):
-    # Seite abrufen
+    params = ParameterHandler()
+    ref = params.getValue('entryUrl').replace("-info", "-stream")
     sHtmlContent = cRequestHandler(URL_GETLINK + sID + '/' + sEpisode).request()
     sHtmlContent = base64.b64decode(str(sHtmlContent))
-
-    if sHtmlContent is None:
-        logger.info("result string is none")
-        return []
-
-    try:
-        getLinkResponseJson = json.loads(sHtmlContent)
-    except (ValueError, TypeError):
-        logger.debug("could not decode server response")
-        return []
-
-    if 'playinfo' not in getLinkResponseJson:
-        logger.info("no playable sources")
-        return []
-
+    isMatch, hUrl = cParser.parseSingleResult(sHtmlContent, '"file":"([^"]+)')
+    Handler = cRequestHandler(hUrl)
+    Handler.addHeaderEntry('Referer', ref)
+    Handler.addHeaderEntry('Origin', URL_MAIN)
+    sHtmlContent = Handler.request()
+    isMatch, aResult = cParser.parse(sHtmlContent, 'RESOLUTION=\d+x(\d+)([^"#]+)')
+    hUrl = hUrl.replace('playlist.m3u8','')
     hosters = []
 
-    for playableEntry in getLinkResponseJson['playinfo']:
+    for quality, url in aResult:
         hoster = dict()
-        quality = playableEntry["label"]
-        url = playableEntry["file"]
-        label = sServername + ' - ' + quality
         if quality in QUALITY_ENUM:
             hoster['quality'] = QUALITY_ENUM[quality]
-        hoster['link'] = url
-        hoster['name'] = label
+        hoster['link'] = hUrl+url
+        hoster['name'] = sServername + ' - ' + quality
         hoster['resolveable'] = True
         hosters.append(hoster)
-
     return hosters
 
+
 def play(sUrl=False):
-    # ParameterHandler erzeugen
-    oParams = ParameterHandler()
-
-    # URL ermitteln falls nicht übergeben
-    if not sUrl: sUrl = oParams.getValue('url')
-
-    # Array mit einem Eintrag für Hosterliste erzeugen (sprich direkt abspielen)
+    params = ParameterHandler()
+    if not sUrl: sUrl = params.getValue('url')
+    ref = params.getValue('entryUrl').replace("-info", "-stream")
     results = []
-    ref = oParams.getValue('entryUrl').replace("-info", "-stream")
-    result = {'streamUrl':  sUrl + '|Referer=' + ref + '|User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0', 'resolved': True}
+    result = {'streamUrl': sUrl + '|Referer=' + ref + '&User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0&' + 'Origin=' + URL_MAIN, 'resolved': True}
     results.append(result)
-
-    # Ergebniss zurückliefern
     return results
+
 
 # Sucher über UI
 def showSearch():
