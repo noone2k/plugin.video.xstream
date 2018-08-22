@@ -1,4 +1,5 @@
 Nightly:
+- [kino.cx] Seite hinzugefügt
 - [StreamDream.ws] hat Domain geändert zu MovieDream.ws
 - [hdfilme.tv] Fix Hoster
 - Fix Foxx
