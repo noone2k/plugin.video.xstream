@@ -11,7 +11,7 @@ SITE_IDENTIFIER = 'streamdream_ws'
 SITE_NAME = 'StreamDream'
 SITE_ICON = 'streamdream.png'
 
-URL_MAIN = 'https://streamdream.ws/'
+URL_MAIN = 'https://moviedream.ws/'
 
 EPISODE_URL = URL_MAIN + 'episodeholen.php'
 HOSTER_URL = URL_MAIN + 'episodeholen3.php'
