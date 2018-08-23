@@ -1,4 +1,5 @@
 Nightly:
+- [watchbox.de] Fix no DRM Support
 - [watchbox.to] entfernt (Seite offline)
 - [kinoger.com] Fix Hoster
 - [cinemaxx.cc] Fix Hoster
