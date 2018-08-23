@@ -1,4 +1,6 @@
 Nightly:
+- [kinoger.com] Fix Hoster
+- [cinemaxx.cc] Fix Hoster
 - [kino.cx] Seite hinzugefügt
 - [StreamDream.ws] hat Domain geändert zu MovieDream.ws
 - [hdfilme.tv] Fix Hoster
