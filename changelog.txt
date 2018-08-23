@@ -6,8 +6,8 @@ xStream 3.5.1
 - [watchbox.to] entfernt (Seite offline)
 - [kinoger.com] Fix Hoster
 - [cinemaxx.cc] Fix Hoster
-- [kino.cx] Seite hinzugefügt
-- [StreamDream.ws] hat Domain geändert zu MovieDream.ws
+- [kino.cx] Add Seite 
+- [StreamDream.ws] Domain zu MovieDream.ws
 - [hdfilme.tv] Fix Hoster
 - Fix Foxx
 - Fix Foxx hoster google
