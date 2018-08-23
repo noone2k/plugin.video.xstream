@@ -208,7 +208,8 @@ def showHosters():
 
 
 def getHosterUrl(sUrl=False):
-    return [{'streamUrl': sUrl, 'resolved': True}]
+    ref = ParameterHandler().getValue('entryUrl')
+    return [{'streamUrl': sUrl + '|Referer=' + ref + '&User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0' , 'resolved': True}]
 
 
 def showSearch():
