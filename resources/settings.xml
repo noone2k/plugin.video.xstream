@@ -2,7 +2,7 @@
   <category label="30020">
     <setting label="30030" type="lsep" />
     <setting default="true" id="githubUpdateXstream" label="30010" type="bool" />
-    <setting default="false" id="githubUpdateUrlResolver" label="30015" type="bool" />
+    <setting default="false" id="githubUpdateUrlResolver" label="30015" type="bool" visible="false" />
     <setting type="sep" />
     <setting label="30031" type="lsep" />
     <setting default="true" id="GlobalSearchPosition" label="30011" type="bool" />
