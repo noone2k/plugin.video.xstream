@@ -1,4 +1,5 @@
 Nightly:
+- [watchbox.to] entfernt (Seite offline)
 - [kinoger.com] Fix Hoster
 - [cinemaxx.cc] Fix Hoster
 - [kino.cx] Seite hinzugefügt
