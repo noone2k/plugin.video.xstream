@@ -129,7 +129,7 @@ def showEpisodes():
     entryUrl = params.getValue('entryUrl')
     sSeasonNr = params.getValue('sSeasonNr')
     sHtmlContent = cRequestHandler(entryUrl).request()
-    pattern = '<section[^>]class="swiper-slide">.*?season-tab.*?href="([^"]+).*?src="([^"]+).*?alt="([^"]+).*?Episode[^>]([\d+]+)'
+    pattern = '<section[^>]class="swiper-slide.*?season-tab.*?href="([^"]+).*?src="([^"]+).*?alt="([^"]+).*?Episode[^>]([\d+]+)'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -139,7 +139,7 @@ def showEpisodes():
     total = len(aResult)
     for sUrl, sThumbnail, sName, sEpisodeNr in aResult:
         if sThumbnail and sThumbnail.startswith('/'):
-            sThumbnail = 'http:' + sThumbnail
+            sThumbnail = 'https:' + sThumbnail
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'getHosterUrl')
         oGuiElement.setTVShowTitle(sTVShowTitle)
         oGuiElement.setSeason(sSeasonNr)
@@ -200,6 +200,6 @@ def showSearchEntries(entryUrl=False, sGui=False):
 def getHosterUrl():
     sUrl = ParameterHandler().getValue('entryUrl')
     sHtmlContent = cRequestHandler(sUrl).request()
-    isMatch, hLink = cParser().parseSingleResult(sHtmlContent, "hls:[^>]'([^']+)',")
+    isMatch, hLink = cParser().parseSingleResult(sHtmlContent, "hls.*?(http.*?m3u8)")
     if isMatch:
         return [{'streamUrl': hLink, 'resolved': True}]
