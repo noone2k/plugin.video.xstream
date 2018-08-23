@@ -1,4 +1,7 @@
 Nightly:
+
+xStream 3.5.1
+  23.08.2018
 - [watchbox.de] Fix no DRM Support
 - [watchbox.to] entfernt (Seite offline)
 - [kinoger.com] Fix Hoster
