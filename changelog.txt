@@ -1,4 +1,5 @@
 Nightly:
+- [s.to] Fix Episode
 - Resolver Autoupdate ausgeblendet
 
 xStream 3.5.1
