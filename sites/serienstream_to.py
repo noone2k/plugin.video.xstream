@@ -5,9 +5,9 @@ from resources.lib.cCFScrape import cCFScrape
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
 from resources.lib.gui.guiElement import cGuiElement
-from resources.lib.jsnprotect import *
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
+from resources.lib.jsnprotect import *
 from resources.lib.parser import cParser
 
 SITE_IDENTIFIER = 'serienstream_to'
@@ -134,6 +134,7 @@ def showSeasons():
         return
 
     pattern = '<a[^>]*href="([^"]*)"[^>]*title="([^"]*)"[^>]*>(.*?)<\/a>.*?'
+
     isMatch, aResult = cParser.parse(sMainContent, pattern)
 
     if not isMatch:
@@ -188,7 +189,7 @@ def showEpisodes():
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
-    pattern = '<tr[^>]*data-episode-season-id="(\d+)">.*?<td[^>]*class="seasonEpisodeTitle"[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>.*?(?:<strong>(.*?)</strong>.*?)?(?:<span>(.*?)</span>.*?)?<'
+    pattern = '<tr[^>]*data-episode-season-id="(\d+).*?<a href="([^"]+).*?(?:<strong>(.*?)</strong>.*?)?(?:<span>(.*?)</span>.*?)?<'
     isMatch, aResult = cParser.parse(sMainContent, pattern)
 
     if not isMatch:
@@ -205,7 +206,8 @@ def showEpisodes():
         oGuiElement.setMediaType('episode' if not isMovieList else 'movie')
         if sThumbnail:
             oGuiElement.setThumbnail(sThumbnail)
-        oGuiElement.setDescription(sDesc)
+        if sDesc:
+            oGuiElement.setDescription(sDesc)
         if not isMovieList:
             oGuiElement.setSeason(sSeason)
             oGuiElement.setEpisode(int(sID))
@@ -217,7 +219,6 @@ def showEpisodes():
 
 
 def showHosters():
-
     sUrl = ParameterHandler().getValue('sUrl')
     sHtmlContent = cRequestHandler(sUrl).request()
     pattern = '<li[^>]*data-lang-key="([^"]+).*?data-link-target="([^"]+).*?<h4>([^<]+)<([^>]+)'
@@ -252,6 +253,7 @@ def getHosterUrl(sUrl=False):
         password = I1I1I1I1II1I1I1I1I1()[1]
     Handler = cRequestHandler(URL_LOGIN, caching=False)
     Handler.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
+    Handler.addHeaderEntry('Referer', URL_MAIN + sUrl)
     Handler.addParameters('email', username)
     Handler.addParameters('password', password)
     Handler.request()
