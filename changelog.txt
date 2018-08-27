@@ -1,5 +1,6 @@
 Nightly:
-- [Foxx.to Fix Hoster tnx sP4rK
+- [iload.to] Fix Cover and next Page
+- [Foxx.to] Fix Hoster tnx sP4rK
 - [s.to] Fix Episode
 - Resolver Autoupdate ausgeblendet
 
