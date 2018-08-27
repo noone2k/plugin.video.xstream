@@ -10,12 +10,11 @@ SITE_IDENTIFIER = 'iload_to'
 SITE_NAME = 'iLoad'
 SITE_ICON = 'iload.png'
 
-URL_MAIN = 'http://iload.to'
+URL_MAIN = 'https://iload.to'
 URL_FILME = URL_MAIN + '/category/3/filme/'
 URL_SHOWS = URL_MAIN + '/category/7/serien/'
 URL_SEARCH_MOVIE = URL_MAIN + '/suche/%s/Filme'
 URL_SEARCH_TV = URL_MAIN + '/suche/%s/Serien'
-
 ORDER_DESC = '/order/%s-0'
 ORDER_ASC = '/order/%s-1'
 
@@ -36,7 +35,6 @@ def showContentMenu():
     oGui = cGui()
     params = ParameterHandler()
     entryUrl = params.getValue('sUrl')
-
     params.setParam('sUrl', entryUrl + (ORDER_DESC % 0))
     oGui.addFolder(cGuiElement('Neuste', SITE_IDENTIFIER, 'showEntries'), params)
     params.setParam('sUrl', entryUrl + (ORDER_DESC % 1))
@@ -56,7 +54,6 @@ def showGenre():
     params = ParameterHandler()
     entryUrl = params.getValue('sUrl')
     sHtmlContent = cRequestHandler(entryUrl).request()
-
     pattern = '<a[^>]*href="([^"]+)"[^>]*class="next level3"[^>]*>.*?<div>([^<]+)</div>\s*</a>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
@@ -74,15 +71,14 @@ def showEntries(entryUrl=False, sGui=False, isInternalSearch=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
-
-    sHtmlContent = cRequestHandler(entryUrl, ignoreErrors=not isInternalSearch).request()
-
-    sPattern = '<table[^>]*class="row"[^>]*>.*?'  # container start
-    sPattern += '<td[^>]*class="list-cover"[^>]*>.*?<img[^>]*src="([^"]*)"[^>]*[^>]*>.*?</td>.*?'  # thumbnail
+    oRequest = cRequestHandler(entryUrl, ignoreErrors=not isInternalSearch)
+    sHtmlContent = oRequest.request()
+    cf = createUrl(entryUrl, oRequest)
+    sPattern = '<table[^>]*class="row".*?'  # container start
+    sPattern += '<img[^>]*src="([^"]+).*?'  # thumbnail
     sPattern += '<a[^>]*href="([^"]*)"[^>]*>([^<]*).*?'  # url
     sPattern += '(?:<span[^>]*class="list-year"[^>]*>\s*(?:\((\d+)\))</span>.*?)?'  # year
-    sPattern += '<td[^>]*class="description"[^>]*>(.*?)</t.*?'  # desc
-    sPattern += '</table>'  # container end
+    sPattern += '<td[^>]*class="description"[^>]*>(.*?)<'  # desc
     isMatch, aResult = cParser.parse(sHtmlContent, sPattern)
 
     if not isMatch:
@@ -90,13 +86,12 @@ def showEntries(entryUrl=False, sGui=False, isInternalSearch=False):
         return
 
     isTvshow = True if "serien" in entryUrl.lower() else False
-
     total = len(aResult)
     for sThumbnail, sUrl, sName, sYear, sDesc in aResult:
-        if sThumbnail and not sThumbnail.startswith('http'):
+        if sThumbnail.startswith('//'):
             sThumbnail = 'http:' + sThumbnail
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons' if isTvshow else 'showHosters')
-        oGuiElement.setThumbnail(sThumbnail)
+        oGuiElement.setThumbnail(sThumbnail + cf)
         oGuiElement.setDescription(sDesc)
         if sYear:
             oGuiElement.setYear(sYear)
@@ -108,7 +103,7 @@ def showEntries(entryUrl=False, sGui=False, isInternalSearch=False):
         params.setParam('sName', sName)
         oGui.addFolder(oGuiElement, params, isTvshow, total)
 
-    if isInternalSearch:
+    if not isInternalSearch:
         sPattern = '<span[^>]*class="selected">\d+</span>\s*<a[^>]*href="([^"]+)">\d+</a>'
         isMatchNextPage, aResult = cParser.parse(sHtmlContent, sPattern)
         if isMatchNextPage:
@@ -127,7 +122,6 @@ def showSeasons():
     sTVShowTitle = params.getValue('sName')
     sDesc = params.getValue('sDesc')
     entryUrl = params.getValue('entryUrl')
-
     sHtmlContent = cRequestHandler(entryUrl).request()
     pattern = '<td[^>]*data-title-name="[^"]*(\s+\d+)"[^>]*>\s*'  # name / nr
     pattern += '<a[^>]*href="([^"]*)"[^>]*>'  # url
@@ -149,7 +143,6 @@ def showSeasons():
         params.setParam('sSeasonNr', sSeasonNr)
         params.setParam('sUrl', URL_MAIN + sUrl)
         oGui.addFolder(oGuiElement, params, True, total)
-
     oGui.setView('seasons')
     oGui.setEndOfDirectory()
 
@@ -162,7 +155,6 @@ def showEpisodes():
     sTVShowTitle = params.getValue('TVShowTitle')
     sDesc = params.getValue('sDesc')
     entryUrl = params.getValue('sUrl')
-
     sHtmlContent = cRequestHandler(entryUrl).request()
     pattern = '<td[^>]*data-title-name="[^"]*(\s+\d+)"[^>]*>\s*'  # name / nr
     pattern += '<a[^>]*href="([^"]*)"[^>]*>'  # url
@@ -192,7 +184,6 @@ def showHosters():
     params = ParameterHandler()
     sUrl = params.getValue('entryUrl')
     hosters = []
-
     sHtmlContent = cRequestHandler(sUrl).request()
     sPattern = '<a[^>]*href="([^"]+\/TitleReleaseList[^"]*)"[^>]*>([^<]+)</a>'  # url
     isMatch, aResult = cParser.parse(sHtmlContent, sPattern)
@@ -203,7 +194,6 @@ def showHosters():
             hosters.extend(getHostFromUrl(sHtmlContent, sName))
     else:
         hosters.extend(getHostFromUrl(sHtmlContent))
-
     if hosters:
         hosters.append('getHosterUrl')
     return hosters
@@ -223,17 +213,15 @@ def getHostFromUrl(sHtmlContent, sReleaseName=False):
         if sReleaseName:
             hoster['displayedName'] = '%s  [%s]' % (sName.title(), sReleaseName)
         hosters.append(hoster)
-
     return hosters
 
 
 def getHosterUrl(sUrl=False):
     if not sUrl: sUrl = ParameterHandler().getValue('entryUrl')
-
     oRequest = cRequestHandler(sUrl, caching=False)
     oRequest.request()
-
     return [{'streamUrl': oRequest.getRealUrl(), 'resolved': False}]
+
 
 def showSearch():
     oGui = cGui()
@@ -242,9 +230,9 @@ def showSearch():
     _search(False, sSearchText)
     oGui.setEndOfDirectory()
 
+
 def _search(oGui, sSearchText):
     if not sSearchText: return
-
     isInternalSearch = (oGui == False)
 
     if isInternalSearch:
@@ -256,3 +244,18 @@ def _search(oGui, sSearchText):
     if isInternalSearch:
         oGui.setView('movies')
         oGui.setEndOfDirectory()
+
+
+def createUrl(sUrl, oRequest):
+    import urlparse
+    parsed_url = urlparse.urlparse(sUrl)
+    netloc = parsed_url.netloc[4:] if parsed_url.netloc.startswith('www.') else parsed_url.netloc
+    cfId = oRequest.getCookie('__cfduid', '.' + netloc)
+    cfClear = oRequest.getCookie('cf_clearance', '.' + netloc)
+    if cfId and cfClear and 'Cookie=Cookie:' not in sUrl:
+        delimiter = '&' if '|' in sUrl else '|'
+        sUrl = delimiter + "Cookie=Cookie: __cfduid=" + cfId.value + "; cf_clearance=" + cfClear.value
+    if 'User-Agent=' not in sUrl:
+        delimiter = '&' if '|' in sUrl else '|'
+        sUrl += delimiter + "User-Agent=" + oRequest.getHeaderEntry('User-Agent')
+    return sUrl
