@@ -182,9 +182,14 @@ def showHosters():
             oRequest = cRequestHandler(hUrl)
             oRequest.addHeaderEntry('Referer', hUrl)
             sHtmlContent = oRequest.request()
-            aResult = cParser().parse(sHtmlContent, "jbdaskgs[^>]=[^>]'([^']+)")
+            aResult = cParser().parse(sHtmlContent, "(?:jbdaskgs|m3u8File)[^>]=[^>]'([^']+)")
             cf = cCFScrape.createUrl(sUrl, oRequest)
             for sUrl in aResult[1]:
+                if 'downloaded.' in sUrl:
+                    sUrl = 'https://fast.streamservice.online/public/dist/index.html?id=' + sUrl
+                    hoster = {'link': sUrl, 'name': 'play'}
+                    hosters.append(hoster)
+                    continue
                 import base64
                 sUrl = base64.b64decode(sUrl)
                 isMatch, aResult = cParser.parse(sUrl, '"file":"([^"]+).*?label":"([^"]+)')
