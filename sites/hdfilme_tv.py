@@ -406,7 +406,7 @@ def _getHostFromUrl(sID, sEpisode, sServername):
         hoster = dict()
         if quality in QUALITY_ENUM:
             hoster['quality'] = QUALITY_ENUM[quality]
-        hoster['link'] = hUrl+url
+        hoster['link'] = hUrl+url + '|' + 'Origin=https%3A%2F%2Fhdfilme.tv%2F&Accept-Language=de-de,de;q=0.8,en-us;q=0.5,en;q=0.3&Accept-Encoding=gzip&Referer=https%3A%2F%2Fhdfilme.tv%2F'
         hoster['name'] = sServername + ' - ' + quality
         hoster['resolveable'] = True
         hosters.append(hoster)
@@ -414,11 +414,8 @@ def _getHostFromUrl(sID, sEpisode, sServername):
 
 
 def play(sUrl=False):
-    params = ParameterHandler()
-    if not sUrl: sUrl = params.getValue('url')
-    ref = params.getValue('entryUrl').replace("-info", "-stream")
     results = []
-    result = {'streamUrl': sUrl + '|Referer=' + ref + '&User-Agent=Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0&' + 'Origin=' + URL_MAIN, 'resolved': True}
+    result = {'streamUrl': sUrl, 'resolved': True}
     results.append(result)
     return results
 
