@@ -1,4 +1,5 @@
 Nightly:
+- [hdfilme_tv] Fix Hoster
 - [kinoger.com] Fix Hoster
 - [iload.to] Fix Cover and next Page
 - [Foxx.to] Fix Hoster tnx sP4rK
