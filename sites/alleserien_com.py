@@ -128,6 +128,7 @@ def showSeasons():
     sHtmlContent = cRequestHandler(sUrl).request()
     pattern = '<div[^>]class="collapse[^>]m.*?id="s([\d]+)">'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
+    isMatchDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
@@ -141,6 +142,8 @@ def showSeasons():
         oGuiElement.setSeason(sSeasonNr)
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
+        if sDesc:
+            oGuiElement.setDescription(sDesc)
         params.setParam('sSeasonNr', sSeasonNr)
         oGui.addFolder(oGuiElement, params, True, total)
     oGui.setView('seasons')
@@ -163,6 +166,7 @@ def showEpisodes():
 
     pattern = "href = '([^']+).*?episodeNumber.*?>([\d]+)"
     isMatch, aResult = cParser.parse(sHtmlContainer, pattern)
+    isMatchDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
@@ -175,6 +179,8 @@ def showEpisodes():
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
         oGuiElement.setEpisode(sEpisodeNr)
+        if sDesc:
+            oGuiElement.setDescription(sDesc)
         params.setParam('entryUrl', sUrl)
         oGui.addFolder(oGuiElement, params, False, total)
     oGui.setView('episodes')
