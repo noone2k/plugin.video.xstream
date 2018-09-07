@@ -114,6 +114,11 @@ def showEntries(entryUrl=False, sGui=False):
         params.setParam('sThumbnail', sThumbnail)
         oGui.addFolder(oGuiElement, params, True, total)
     if not sGui:
+        pattern = 'pagination">.*?<a href="([^"]+)">&gt;</a>.*?</a></div>'
+        isMatchNextPage, sNextUrl = cParser.parseSingleResult(sHtmlContent, pattern)
+        if isMatchNextPage:
+            params.setParam('sUrl', sNextUrl)
+            oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
         oGui.setView('tvshows')
         oGui.setEndOfDirectory()
 
