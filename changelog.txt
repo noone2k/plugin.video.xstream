@@ -1,4 +1,5 @@
 Nightly:
+- [alleserien.com] komplett neu geschrieben
 - [s.to] Fix Next Page
 - [hdfilme_tv] Fix Hoster
 - [kinoger.com] Fix Hoster
