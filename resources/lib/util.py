@@ -91,6 +91,12 @@ class cUtil:
             s = s.replace("\\u00fc", "ü")
         if '\\u00df' in s:
             s = s.replace("\\u00df", "ß")
+        if '\u2013' in s:
+            s = s.replace("\u2013", "-")
+        if '\u00b3' in s:
+            s = s.replace("\u00b3", "³")
+            
+            
         return s
 
     @staticmethod
