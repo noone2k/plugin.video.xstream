@@ -1,4 +1,5 @@
 Nightly:
+- [s.to] Fix Next Page
 - [hdfilme_tv] Fix Hoster
 - [kinoger.com] Fix Hoster
 - [iload.to] Fix Cover and next Page
