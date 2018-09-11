@@ -1,4 +1,5 @@
 Nightly:
+- [hd-streams.org] fix hoster tnx sraedler and Search usw.
 - [alleserien.com] Add Description
 - [alleserien.com] komplett neu geschrieben
 - [s.to] Fix Next Page
