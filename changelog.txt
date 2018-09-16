@@ -1,6 +1,6 @@
 Nightly:
 - [watchbox.de] Add DRM DRM Support(Kodi 18+) zum abzuspielen von DRM streams wird mindestens Kodi 18 benötigt
-- [hd-streams.org] fix hoster tnx sraedler and Search usw.
+- [hd-streams.org] fix hoster and Search tnx sraedler.
 - [alleserien.com] Add Description
 - [alleserien.com] komplett neu geschrieben
 - [s.to] Fix Next Page
