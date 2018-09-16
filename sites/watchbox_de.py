@@ -200,6 +200,35 @@ def showSearchEntries(entryUrl=False, sGui=False):
 def getHosterUrl():
     sUrl = ParameterHandler().getValue('entryUrl')
     sHtmlContent = cRequestHandler(sUrl).request()
-    isMatch, hLink = cParser().parseSingleResult(sHtmlContent, "hls.*?(http.*?m3u8)")
-    if isMatch:
-        return [{'streamUrl': hLink, 'resolved': True}]
+    isMatch, sContainer = cParser().parseSingleResult(sHtmlContent, 'data-player-conf="([^"]+)')
+    if 'drm' in sContainer:
+        import xbmc
+        version = xbmc.getInfoLabel("System.BuildVersion")
+        version = version[:version.find(".")]
+        if version  >=  '18':
+            if not xbmc.getCondVisibility("System.HasAddon(%s)" % "script.module.inputstreamhelper"):
+                xbmc.executebuiltin("InstallAddon(%s)" % "script.module.inputstreamhelper")
+            if xbmc.getCondVisibility("System.HasAddon(%s)" % "script.module.inputstreamhelper"):
+                isMatch, token = cParser().parseSingleResult(sContainer, "Token&quot;:&quot;([^&]+)")
+                isMatch, sUrl = cParser().parseSingleResult(sContainer, "dash.*?(http.*?mpd)")
+                import xbmcgui
+                import inputstreamhelper
+                item = xbmcgui.ListItem(path=sUrl)
+                item.setMimeType("application/dash+xml")
+                item.setContentLookup(False)
+                is_helper = inputstreamhelper.Helper("mpd", drm="com.widevine.alpha")
+                if is_helper.check_inputstream():
+                    item.setProperty("inputstreamaddon", "inputstream.adaptive")
+                    item.setProperty("inputstream.adaptive.manifest_type", "mpd")
+                    item.setProperty("inputstream.adaptive.license_type", "com.widevine.alpha")
+                    item.setProperty("inputstream.adaptive.license_key", "https://widevine.rtl.de/index/proxy|x-auth-token="+ token + "&Content-Type=|R{SSM}|")
+                    import xbmcplugin
+                    xbmcplugin.setResolvedUrl(cGui().pluginHandle, True, item)
+                    return [{'streamUrl': sUrl, 'resolved': True}]
+        else:
+            import xbmcgui
+            xbmcgui.Dialog().ok('xStream', 'DRM geschützt um den Stream abzuspielen wird mindestens Kodi 18 benötigt')
+    else:
+        isMatch, sUrl = cParser().parseSingleResult(sContainer, "hls.*?(http.*?m3u8)")
+        if isMatch:
+            return [{'streamUrl': sUrl, 'resolved': True}]
