@@ -1,4 +1,5 @@
-Nightly:
+xStream 3.5.2~nightly:
+
 - [watchbox.de] Add DRM DRM Support(Kodi 18+) zum abzuspielen von DRM streams wird mindestens Kodi 18 benötigt
 - [hd-streams.org] fix hoster and Search tnx sraedler.
 - [alleserien.com] Add Description
@@ -9,6 +10,7 @@ Nightly:
 - [iload.to] Fix Cover and next Page
 - [Foxx.to] Fix Hoster tnx sP4rK
 - [s.to] Fix Episode
+- [kinox.to] add new domains
 - Resolver Autoupdate ausgeblendet
 
 xStream 3.5.1
