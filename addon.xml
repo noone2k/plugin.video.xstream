@@ -24,8 +24,18 @@
    <news>
    xStream 3.5.2~nightly
    
+- [watchbox.de] Add DRM DRM Support(Kodi 18+) zum abzuspielen von DRM streams mindestens Kodi 18 
+- [hd-streams.org] fix hoster and Search
+- [alleserien.com] Add Description
+- [alleserien.com] komplett neu geschrieben
+- [s.to] Fix Next Page
+- [hdfilme_tv] Fix Hoster
+- [kinoger.com] Fix Hoster
+- [iload.to] Fix Cover and next Page
+- [Foxx.to] Fix Hoster 
+- [s.to] Fix Episode
+- [kinox.to] add new domains
 - Resolver Autoupdate ausgeblendet
-
    </news>
    <assets>
      <icon>icon.png</icon>
