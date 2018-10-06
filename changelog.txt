@@ -1,5 +1,5 @@
 xStream 3.5.2~nightly:
-
+- [ddl.me] Fix Thumbnail and optimize code
 - [kinoger.com] Fix Hoster
 - [cinemaxx.cc] Fix Hoster
 - [watchbox.de] Add DRM DRM Support(Kodi 18+) zum abzuspielen von DRM streams wird mindestens Kodi 18 benötigt
