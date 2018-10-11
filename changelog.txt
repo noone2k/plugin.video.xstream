@@ -1,4 +1,7 @@
-xStream 3.5.2~nightly:
+xStream 3.5.3~nightly:
+
+xStream 3.5.2
+  11.10.2018
 - [ddl.me] Fix Thumbnail and optimize code
 - [kinoger.com] Fix Hoster
 - [cinemaxx.cc] Fix Hoster
