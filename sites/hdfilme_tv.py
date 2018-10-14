@@ -5,7 +5,6 @@ from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
 from resources.lib import logger
 from resources.lib.handler.ParameterHandler import ParameterHandler
-from resources.lib.cCFScrape import cCFScrape
 import re, base64
 
 # Plugin-Eigenschaften
@@ -196,7 +195,7 @@ def showEntries(entryUrl=False, sGui=False):
 
     # Listengröße ermitteln
     total = len(aResult)
-
+    cf = createUrl(URL_MAIN, oRequest)
     # Alle Ergebnisse durchlaufen
     for sUrl, sThumbnail, sEpisodeNrs, sName, sDesc in aResult:
         # Bei Filmen das Jahr vom Title trennen
@@ -230,8 +229,8 @@ def showEntries(entryUrl=False, sGui=False):
             params.setParam('sSeason', "1")
 
         # Thumbnail und Beschreibung für Anzeige anpassen
-        sThumbnail = sThumbnail.replace('_thumb', '')
-        sThumbnail = cCFScrape.createUrl(sThumbnail, oRequest)
+        sThumbnail = sThumbnail.replace('_thumb', '') + cf
+
 
         # Falls vorhanden Jahr ergänzen
         if iYear:
@@ -239,6 +238,7 @@ def showEntries(entryUrl=False, sGui=False):
 
         # Eigenschaften setzen und Listeneintrag hinzufügen
         oGuiElement.setThumbnail(sThumbnail)
+        oGuiElement.setFanart(sThumbnail)
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setDescription(sDesc)
         params.setParam('entryUrl', sUrl)
@@ -326,6 +326,7 @@ def showEpisodes(aResult, params):
         oGuiElement.setSeason(sSeason)
         oGuiElement.setEpisode(iEpisode)
         oGuiElement.setThumbnail(sThumbnail)
+        oGuiElement.setFanart(sThumbnail)
         params.setParam('sEpisodeTitle', sEpisodeTitle)
         params.setParam('sUrl', sUrl)
         params.setParam('sName', sName)
@@ -448,3 +449,17 @@ def _search(oGui, sSearchText):
 
     # URL-Übergeben und Ergebniss anzeigen
     showEntries(URL_SEARCH % sSearchText, oGui)
+
+def createUrl(sUrl, oRequest):
+    import urlparse
+    parsed_url = urlparse.urlparse(sUrl)
+    netloc = parsed_url.netloc[4:] if parsed_url.netloc.startswith('www.') else parsed_url.netloc
+    cfId = oRequest.getCookie('__cfduid', '.' + netloc)
+    cfClear = oRequest.getCookie('cf_clearance', '.' + netloc)
+    if cfId and cfClear and 'Cookie=Cookie:' not in sUrl:
+        delimiter = '&' if '|' in sUrl else '|'
+        sUrl = delimiter + "Cookie=Cookie: __cfduid=" + cfId.value + "; cf_clearance=" + cfClear.value
+    if 'User-Agent=' not in sUrl:
+        delimiter = '&' if '|' in sUrl else '|'
+        sUrl += delimiter + "User-Agent=" + oRequest.getHeaderEntry('User-Agent')
+    return sUrl
