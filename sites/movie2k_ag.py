@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
-import re
 from resources.lib import logger
 from resources.lib.gui.gui import cGui
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
 from resources.lib.parser import cParser
-from resources.lib.util import cUtil
 
 SITE_IDENTIFIER = 'movie2k_ag'
 SITE_NAME = 'Movie2k AG'
 SITE_ICON = 'movie2k_ag.png'
 
-URL_MAIN = 'http://movie2k.ag/'
+URL_MAIN = 'https://movie2k.ag/'
 URL_MOVIE = URL_MAIN + '%s'
-URL_SEARCH = '&keyword=%s'
-URL_Hoster = 'http://www.vodlocker.to/embed/movieStreams/?id=%s'
-
+URL_SEARCH = URL_MAIN + '?c=movie&m=filter&keyword=%s'
+URL_HOSTER = 'https://api.vodlocker.to/embed/movieStreams/?id=%s&lang=2&cat=movie'
 
 def load():
     logger.info("Load %s" % SITE_NAME)
@@ -36,41 +33,36 @@ def load():
     oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'))
     oGui.setEndOfDirectory()
 
-
 def showGenre():
     oGui = cGui()
     params = ParameterHandler()
     sHtmlContent = cRequestHandler(URL_MAIN).request()
-    sPattern = '">Genres</a>.*?</ul>'
-    isMatch, sHtmlContainer = cParser.parseSingleResult(sHtmlContent, sPattern)
+    pattern = '">Genre</a>.*?</ul>'
+    isMatch, sHtmlContainer = cParser.parseSingleResult(sHtmlContent, pattern)
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
-    isMatch, aResult = cParser.parse(sHtmlContainer, "<a[^>]*href='([^']+)'>([^<]+)")
+    isMatch, aResult = cParser.parse(sHtmlContainer, "href='([^']+)'>([^<]+)")
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
     for sUrl, sName in aResult:
-        print sUrl
-        print 'viper'
         params.setParam('sUrl', sUrl)
         oGui.addFolder(cGuiElement(sName, SITE_IDENTIFIER, 'showEntries'), params)
     oGui.setEndOfDirectory()
-
 
 def showEntries(entryUrl=False, sGui=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
-    oRequest.addHeaderEntry('Referer', entryUrl)
+    oRequest.addHeaderEntry('Cookie', 'approve_search=yes')
     sHtmlContent = oRequest.request()
-
-    pattern = '<a[^>]*class="clip-link".*?title="([^"]+).*?href="([^"]+).*?(?:<img src="([^"]+).*?<span>([^<]+)?)'
+    pattern = '<div[^>]id="post-([\d]+)".*?<a[^>]*class="clip-link".*?title="([^"]+).*?<img src="([^"]+).*?<span>(.*?)</p>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -78,41 +70,45 @@ def showEntries(entryUrl=False, sGui=False):
         return
 
     total = len(aResult)
-    for sName, sUrl, sThumbnail, sDesc in aResult:
-        sYear = re.compile("(.*?)\((\d*)\)").findall(sName)
-
+    for sID, sName, sThumbnail, sDesc in aResult:
+        isYear, sYear = cParser().parse(sName, '(.*?)\((\d*)\)')
         for name, year in sYear:
             sName = name
             sYear = year
             break
-
-        sID = re.compile('-(\d+)[^>]htm').findall(sUrl)[0]
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showHosters')
         oGuiElement.setThumbnail(sThumbnail)
-        if sDesc:
-            oGuiElement.setDescription(sDesc)
-        if sYear:
-            oGuiElement.setYear(sYear)
-        params.setParam('sUrl', URL_Hoster % sID)
+        oGuiElement.setFanart(sThumbnail)
+        oGuiElement.setDescription(sDesc.replace('	', ' '))
+        oGuiElement.setYear(sYear)
+        params.setParam('sID', sID)
+        params.setParam('sName', sName)
+        params.setParam('sYear', sYear)
         oGui.addFolder(oGuiElement, params, False, total)
-
     if not sGui:
         isMatchNextPage, sNextUrl = cParser.parseSingleResult(sHtmlContent, '<a[^>]*href="([^"]+)">&gt')
         if isMatchNextPage:
-            params.setParam('sUrl', cUtil.cleanse_text(sNextUrl))
+            params.setParam('sUrl', sNextUrl.replace('amp;',''))
             oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
         oGui.setView('movies')
         oGui.setEndOfDirectory()
 
-
 def showHosters():
-    sUrl = ParameterHandler().getValue('sUrl')
-    sHtmlContent = cRequestHandler(sUrl).request()
-
-    sPattern = "<a[^>]*href='([^']+)'(?:[^>]*player.*?, \"([^\"]+)\")?.*?<span[^>]*class='?url'?[^>]*>(.*?)</span>"
-    isMatch, aResult = cParser().parse(sHtmlContent, sPattern)
-
+    params = ParameterHandler()
+    sID = params.getValue('sID')
+    sName = params.getValue('sName')
+    sYear = params.getValue('sYear')
+    sHtmlContent = cRequestHandler('https://api.vodlocker.to/embed?id=' + sID + '&t=' + sName + '&y=' + sYear + '&referrer=link&server=1').request()
+    pattern = "<source[^>]src='([^']+).*?data-res='([\d]+)'"
+    isMatch, aResult = cParser().parse(sHtmlContent, pattern)
     hosters = []
+    if isMatch:
+        for sUrl, sName in aResult:
+            hoster = {'link': sUrl, 'name': 'CDN ' + sName}
+            hosters.append(hoster)
+    sHtmlContent = cRequestHandler(URL_HOSTER % sID).request()
+    pattern = "<a[^>]*href='([^']+)'(?:[^>]*player.*?, \"([^\"]+)\")?.*?<span[^>]*class='?url'?[^>]*>(.*?)</span>"
+    isMatch, aResult = cParser().parse(sHtmlContent, pattern)
     if isMatch:
         for sHref, sEmbeded, sName in aResult:
             hoster = {'link': (sEmbeded if sEmbeded else sHref), 'name': sName}
@@ -121,10 +117,8 @@ def showHosters():
         hosters.append('getHosterUrl')
     return hosters
 
-
 def getHosterUrl(sUrl=False):
-    return [{'streamUrl': sUrl, 'resolved': False}]
-
+    return [{'streamUrl': sUrl, 'resolved': True if 'vodlocker' in sUrl else False}]
 
 def showSearch():
     oGui = cGui()
@@ -133,32 +127,6 @@ def showSearch():
     _search(False, sSearchText)
     oGui.setEndOfDirectory()
 
-
 def _search(oGui, sSearchText):
     if not sSearchText: return
-    sHtmlContent = cRequestHandler(URL_MAIN).request()
-    try:
-        nonce = re.findall('data-key="([^"]+)', sHtmlContent)[0]
-    except:
-        nonce = '4164OPTZ98adf546874s4'
-    showSearchEntries(URL_MAIN + '?c=movie&m=quickSearch&key=' + nonce + URL_SEARCH % sSearchText.strip(), oGui)
-
-
-def showSearchEntries(entryUrl=False, sGui=False):
-    oGui = sGui if sGui else cGui()
-    params = ParameterHandler()
-    if not entryUrl: entryUrl = params.getValue('sUrl')
-    oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
-    oRequest.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
-    sHtmlContent = oRequest.request()
-
-    pattern = 'id":"([^"]+)","title":"([^"]+)'
-    isMatch, aResult = cParser.parse(sHtmlContent, pattern)
-
-    total = len(aResult)
-    for sID, sName in aResult:
-        oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showHosters')
-        params.setParam('sUrl', URL_Hoster % sID)
-        oGui.addFolder(oGuiElement, params, False, total)
-    if not sGui:
-        oGui.setEndOfDirectory()
+    showEntries(URL_SEARCH % sSearchText.strip(), oGui)
