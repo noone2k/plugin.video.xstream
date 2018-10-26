@@ -1,4 +1,6 @@
 xStream 3.5.3~nightly:
+- [Movie2k AG] Fix Hoster and Search and Description
+- [Filmpalast.to] neu geschrieben
 - Fix HDFilme (Thumbnails)
 
 xStream 3.5.2
