@@ -14,13 +14,13 @@ from resources.lib.parser import cParser
 SITE_IDENTIFIER = 'kinox_to'
 SITE_NAME = 'KinoX'
 SITE_ICON = 'kinox.png'
-SITE_SETTINGS = '<setting default="kinox.io" enable="!eq(-2,false)" id="kinox_to-domain" label="30051" type="labelenum" values="kinox.io|kinos.to|kinox.tv|kinox.si|kinox.sx|kinox.AM|kinox.nu|kinox.sg|kinox.gratis|kinox.MOBI|kinox.fun|kinox.fyi|kinox.wtf" />'
+SITE_SETTINGS = '<setting default="kinos.to" enable="!eq(-2,false)" id="kinox_to-domain" label="30051" type="labelenum" values="kinox.io|kinos.to|kinox.tv|kinox.si|kinox.sx|kinox.AM|kinox.nu|kinox.sg|kinox.gratis|kinox.MOBI|kinox.fun|kinox.fyi|kinox.wtf" />'
 oConfig = cConfig()
 domain = oConfig.getSetting('kinox_to-domain')
 
 URL_MAIN = 'https://' + domain
 URL_NEWS = URL_MAIN + '/index.php'
-URL_CINEMA_PAGE = URL_MAIN + '/Cine-Films.html'
+URL_CINEMA_PAGE = URL_MAIN + '/Kino-Filme.html'
 URL_GENRE_PAGE = URL_MAIN + '/Genre.html'
 URL_MOVIE_PAGE = URL_MAIN + '/Movies.html'
 URL_SERIE_PAGE = URL_MAIN + '/Series.html'
