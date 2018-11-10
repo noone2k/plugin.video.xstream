@@ -1,5 +1,6 @@
 xStream 3.5.3~nightly:
-- [Cinenator] Add Seite 
+- [moviestream] Add Seite
+- [Cinenator] Add Seite
 - [Movie2k AG] Fix Hoster and Search and Description
 - [Filmpalast.to] neu geschrieben
 - Fix HDFilme (Thumbnails)
