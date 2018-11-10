@@ -93,7 +93,7 @@ def showEntries(entryUrl=False, sGui=False):
     pattern = '"><a[^>]href="([^"]+)"[^>]title="([^"]+)"><img[^>]src="([^"]+)'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
     if not isMatch:
-        pattern = '</div><a[^>]href="([^"]+)"[^>]title="([^"]+)">.*?img[^>]src="([^"]+)'
+        pattern = '</div><a[^>]href="([^"]+)"[^>]title="([^"]+)">.*?src="([^"]+)'
         isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
     if not isMatch:
@@ -110,7 +110,10 @@ def showEntries(entryUrl=False, sGui=False):
         oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
-        params.setParam('entryUrl', sUrl)
+        if sUrl.startswith('//'):
+            params.setParam('entryUrl', 'https:' + sUrl)
+        else:
+            params.setParam('entryUrl', sUrl)
         params.setParam('sName', sName)
         params.setParam('sThumbnail', sThumbnail)
         oGui.addFolder(oGuiElement, params, isTvshow, total)
@@ -176,14 +179,17 @@ def showEpisodes():
     isMatchDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '"description">([^<]+)')
 
     total = len(aResult)
-    for sEpisodeUrl, sTitle in aResult:
-        oGuiElement = cGuiElement(sTitle, SITE_IDENTIFIER, "showHosters")
+    for sEpisodeUrl, sName in aResult:
+        oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, "showHosters")
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
         oGuiElement.setTVShowTitle(sShowName)
         oGuiElement.setSeason(sSeason)
         oGuiElement.setMediaType('episode')
-        params.setParam('entryUrl', sEpisodeUrl)
+        if sEpisodeUrl.startswith('//'):
+            params.setParam('entryUrl', 'https:' + sEpisodeUrl)
+        else:
+            params.setParam('entryUrl', sEpisodeUrl)
         if isMatchDesc:
             oGuiElement.setDescription(sDesc)
         oGui.addFolder(oGuiElement, params, False, total)
