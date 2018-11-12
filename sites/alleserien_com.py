@@ -10,10 +10,11 @@ from resources.lib.parser import cParser
 SITE_IDENTIFIER = 'alleserien_com'
 SITE_NAME = 'Alleserien.com'
 SITE_ICON = 'alleserien_com.png'
-SITE_GLOBAL_SEARCH = False
+
 URL_MAIN = 'https://alleserien.com'
 URL_SERIEN = URL_MAIN + '/serien'
 URL_FILME = URL_MAIN + '/filme'
+URL_SEARCH = URL_MAIN + '/search?page=1&from=1900&to=2018&type=Alle&rating=0&sortBy=latest&search=%s'
 
 
 def load():
@@ -21,25 +22,26 @@ def load():
     oGui = cGui()
     params = ParameterHandler()
     params.setParam('page', 1)
-    params.setParam('genre', 'Alle')
+    params.setParam('type', 'Alle')
     params.setParam('sUrl', URL_FILME)
     oGui.addFolder(cGuiElement('Filme', SITE_IDENTIFIER, 'showContentMenu'), params)
     params.setParam('sUrl', URL_SERIEN)
     oGui.addFolder(cGuiElement('Serien', SITE_IDENTIFIER, 'showContentMenu'), params)
+    oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'), params)
     oGui.setEndOfDirectory()
 
 
 def showContentMenu():
     oGui = cGui()
     params = ParameterHandler()
-    params.setParam('stype', 'name')
+    params.setParam('sortBy', 'name')
     oGui.addFolder(cGuiElement('Sortiert nach Name', SITE_IDENTIFIER, 'showEntries'), params)
-    params.setParam('stype', 'best')
+    params.setParam('sortBy', 'best')
     oGui.addFolder(cGuiElement('Am besten bewertet', SITE_IDENTIFIER, 'showEntries'), params)
-    params.setParam('stype', 'latest')
+    params.setParam('sortBy', 'latest')
     oGui.addFolder(cGuiElement('Neueste Release', SITE_IDENTIFIER, 'showEntries'), params)
-    params.setParam('stype', 'name')
-    oGui.addFolder(cGuiElement('Genre', SITE_IDENTIFIER, 'showGenre'), params)
+    params.setParam('sortBy', 'name')
+    oGui.addFolder(cGuiElement('Genre', SITE_IDENTIFIER, 'showGenre'))
     oGui.setEndOfDirectory()
 
 
@@ -62,31 +64,36 @@ def showGenre():
         return
 
     for sName in aResult:
-        params.setParam('genre', sName)
+        params.setParam('type', sName)
         oGui.addFolder(cGuiElement(sName, SITE_IDENTIFIER, 'showEntries'), params)
     oGui.setEndOfDirectory()
 
 
-def showEntries(entryUrl=False, sGui=False):
+def showEntries(entryUrl=False, sGui=False, sSearchText=None):
     import time
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
-    stype = params.getValue('stype')
+    sortBy = params.getValue('sortBy')
     page = params.getValue('page')
-    genre = params.getValue('genre')
+    type = params.getValue('type')
     sHtmlContent = cRequestHandler(entryUrl).request()
     isMatch, url = cParser.parseSingleResult(sHtmlContent, "url : '([^']+)")
     isMatch, token = cParser.parseSingleResult(sHtmlContent, "token':'([^']+)")
     oRequest = cRequestHandler(url)
+    if sSearchText:
+        oRequest.addParameters('search', sSearchText)
+        page = '1'
+        type = 'Alle'
+        sortBy = 'latest'
     oRequest.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
     oRequest.addParameters('_token', token)
     oRequest.addParameters('from', 1900)
     oRequest.addParameters('page', page)
     oRequest.addParameters('rating', 0)
-    oRequest.addParameters('sortBy', stype)
+    oRequest.addParameters('sortBy', sortBy)
     oRequest.addParameters('to', time.strftime("%Y", time.localtime()))
-    oRequest.addParameters('type', genre)
+    oRequest.addParameters('type', type)
     oRequest.setRequestType(1)
     sHtmlContent = oRequest.request()
     pattern = '<a title=[^>]"(.*?)" href=[^>]"([^"]+).*?src=[^>]"([^"]+)'
@@ -128,7 +135,7 @@ def showSeasons():
     sHtmlContent = cRequestHandler(sUrl).request()
     pattern = '<div[^>]class="collapse[^>]m.*?id="s([\d]+)">'
     isMatch, aResult = cParser().parse(sHtmlContent, pattern)
-    isMatchDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
+    isDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
@@ -142,7 +149,7 @@ def showSeasons():
         oGuiElement.setSeason(sSeasonNr)
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
-        if sDesc:
+        if isDesc:
             oGuiElement.setDescription(sDesc)
         params.setParam('sSeasonNr', sSeasonNr)
         oGui.addFolder(oGuiElement, params, True, total)
@@ -164,9 +171,8 @@ def showEpisodes():
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
         return
 
-    pattern = "href = '([^']+).*?episodeNumber.*?>([\d]+)"
-    isMatch, aResult = cParser.parse(sHtmlContainer, pattern)
-    isMatchDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
+    isMatch, aResult = cParser.parse(sHtmlContainer, "href = '([^']+).*?episodeNumber.*?>([\d]+)")
+    isDesc, sDesc = cParser.parseSingleResult(sHtmlContent, '<p>([^<]+)')
 
     if not isMatch:
         oGui.showInfo('xStream', 'Es wurde kein Eintrag gefunden')
@@ -174,12 +180,12 @@ def showEpisodes():
 
     total = len(aResult)
     for sUrl, sEpisodeNr in aResult:
-        oGuiElement = cGuiElement('Folge ' + str(sEpisodeNr), SITE_IDENTIFIER, 'showHosters')
+        oGuiElement = cGuiElement('Folge ' + sEpisodeNr, SITE_IDENTIFIER, 'showHosters')
         oGuiElement.setMediaType('episode')
         oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setFanart(sThumbnail)
         oGuiElement.setEpisode(sEpisodeNr)
-        if sDesc:
+        if isDesc:
             oGuiElement.setDescription(sDesc)
         params.setParam('entryUrl', sUrl)
         oGui.addFolder(oGuiElement, params, False, total)
@@ -226,3 +232,16 @@ def getHosterUrl(sUrl=False):
         return [{'streamUrl': sUrl[0], 'resolved': False}]
     else:
         return [{'streamUrl': sUrl, 'resolved': False}]
+
+
+def showSearch():
+    oGui = cGui()
+    sSearchText = oGui.showKeyBoard()
+    if not sSearchText: return
+    _search(False, sSearchText)
+    oGui.setEndOfDirectory()
+
+
+def _search(oGui, sSearchText):
+    if not sSearchText: return
+    showEntries(URL_SEARCH % sSearchText.strip(), oGui, sSearchText)
